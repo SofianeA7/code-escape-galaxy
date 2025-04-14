@@ -22,17 +22,30 @@ const GameStream: React.FC = () => {
         <div className="grid grid-cols-5 gap-2 w-full max-w-lg opacity-80">
           {Array.from({ length: 25 }).map((_, i) => {
             const isRevealed = Math.random() > 0.6;
-            const type = isRevealed 
-              ? ['blue', 'red', 'neutral'][Math.floor(Math.random() * 3)]
-              : '';
+            
+            // Distribution : 9 bleus, 8 rouges, 6 neutres, 2 assassins
+            let type;
+            if (i < 9) {
+              type = 'blue';
+            } else if (i < 17) {
+              type = 'red';
+            } else if (i < 23) {
+              type = 'neutral';
+            } else {
+              type = 'assassin';
+            }
+            
+            // Mélangez les cellules
+            const randomizedType = isRevealed ? type : '';
             
             return (
               <motion.div 
                 key={i}
                 className={`aspect-[4/3] rounded border ${
-                  type === 'blue' ? 'bg-space-blue/30 border-space-blue' :
-                  type === 'red' ? 'bg-space-red/30 border-space-red' :
-                  type === 'neutral' ? 'bg-gray-700/30 border-gray-600' :
+                  randomizedType === 'blue' ? 'bg-space-blue/30 border-space-blue' :
+                  randomizedType === 'red' ? 'bg-space-red/30 border-space-red' :
+                  randomizedType === 'neutral' ? 'bg-gray-700/30 border-gray-600' :
+                  randomizedType === 'assassin' ? 'bg-black border-white' :
                   'bg-space-darkblue/50 border-gray-700'
                 }`}
                 initial={{ scale: 0.9 }}

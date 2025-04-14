@@ -8,13 +8,15 @@ interface AIAgentProps {
   isActive?: boolean;
   isSpeaking?: boolean;
   onSelect?: () => void;
+  message?: string;
 }
 
 const AIAgent: React.FC<AIAgentProps> = ({
   agent,
   isActive = false,
   isSpeaking = false,
-  onSelect
+  onSelect,
+  message
 }) => {
   return (
     <motion.div
@@ -41,19 +43,19 @@ const AIAgent: React.FC<AIAgentProps> = ({
         )}
       </div>
       
-      {isSpeaking && (
+      {isSpeaking && message && (
         <motion.div 
           className="mt-2 text-sm text-gray-300 bg-space-darkblue/50 p-2 rounded"
           initial={{ opacity: 0, height: 0 }}
           animate={{ opacity: 1, height: 'auto' }}
           transition={{ duration: 0.3 }}
         >
-          <span className="text-space-blue">Analyzing...</span> This could be related to space travel or weapons.
+          <span className="text-space-blue">{agent.name}:</span> {message}
         </motion.div>
       )}
       
       <div className="mt-2 flex items-center">
-        <div className="text-xs text-gray-400 mr-2">Confidence</div>
+        <div className="text-xs text-gray-400 mr-2">Confiance</div>
         <div className="flex-1 bg-gray-700 h-1 rounded-full overflow-hidden">
           <motion.div 
             className="bg-space-blue h-1"

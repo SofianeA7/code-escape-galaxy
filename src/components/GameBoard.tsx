@@ -1,9 +1,11 @@
+
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import WordGrid from './WordGrid';
 import AIAgent from './AIAgent';
 import { GameState } from '../hooks/useGameState';
 import { Search, Send, Rocket, Clock } from 'lucide-react';
+import { getAgentGuess } from '../data/gameData';
 
 interface GameBoardProps {
   gameState: GameState;
@@ -22,17 +24,36 @@ const GameBoard: React.FC<GameBoardProps> = ({
   const [number, setNumber] = useState(1);
   const [activeAgent, setActiveAgent] = useState(0);
   const [agentThinking, setAgentThinking] = useState(false);
+  const [suggestedIndex, setSuggestedIndex] = useState<number | null>(null);
   
   useEffect(() => {
     if (gameState.currentClue) {
       setAgentThinking(true);
       const timer = setTimeout(() => {
         setAgentThinking(false);
+        
+        // Une fois que l'agent a fini de réfléchir, il suggère un mot
+        const guessIndex = getAgentGuess(gameState.wordGrid, gameState.currentClue);
+        if (guessIndex >= 0) {
+          setSuggestedIndex(guessIndex);
+        }
       }, 3000);
       
       return () => clearTimeout(timer);
     }
-  }, [gameState.currentClue]);
+  }, [gameState.currentClue, gameState.wordGrid]);
+  
+  useEffect(() => {
+    if (suggestedIndex !== null && !agentThinking) {
+      // Appliquer la suggestion après un court délai
+      const timer = setTimeout(() => {
+        onGuessWord(suggestedIndex);
+        setSuggestedIndex(null);
+      }, 1500);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [suggestedIndex, agentThinking, onGuessWord]);
   
   useEffect(() => {
     const timer = setInterval(() => {
@@ -46,6 +67,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
     e.preventDefault();
     if (clue.trim() && number > 0) {
       onSubmitClue(clue.trim(), number);
+      setClue('');
     }
   };
   
@@ -92,6 +114,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
               words={gameState.wordGrid} 
               onWordClick={onGuessWord}
               disabled={!isGuessingPhase}
+              showSpymasterView={true}
             />
             
             <div className="mt-4 flex justify-between items-center">
@@ -122,14 +145,29 @@ const GameBoard: React.FC<GameBoardProps> = ({
             <h2 className="text-space-yellow font-bold text-lg mb-3">AGENTS REBELLES</h2>
             
             <div className="space-y-3">
-              {gameState.selectedAgents.map((agent, i) => (
-                <AIAgent 
-                  key={agent.id}
-                  agent={agent}
-                  isActive={i === activeAgent}
-                  isSpeaking={agentThinking && i === activeAgent}
-                />
-              ))}
+              {gameState.selectedAgents.map((agent, i) => {
+                // L'agent actif est celui qui parle ou suggère actuellement
+                const isActive = i === activeAgent;
+                const isSpeaking = agentThinking && isActive;
+                const isSuggesting = !agentThinking && suggestedIndex !== null && isActive;
+                
+                let agentMessage = "";
+                if (isSpeaking) {
+                  agentMessage = "Analyse en cours... Je réfléchis à l'indice.";
+                } else if (isSuggesting && suggestedIndex !== null) {
+                  agentMessage = `Je suggère le mot "${gameState.wordGrid[suggestedIndex].word}"!`;
+                }
+                
+                return (
+                  <AIAgent 
+                    key={agent.id}
+                    agent={agent}
+                    isActive={isActive}
+                    isSpeaking={isSpeaking || isSuggesting}
+                    message={agentMessage}
+                  />
+                );
+              })}
             </div>
           </div>
           

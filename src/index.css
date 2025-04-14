@@ -88,6 +88,23 @@
   .word-card.assassin {
     @apply bg-black border-white text-white;
   }
+  
+  /* Classes pour la vue spymaster */
+  .word-card.spymaster-blue {
+    @apply bg-space-blue/20 border-space-blue/40 text-white;
+  }
+  
+  .word-card.spymaster-red {
+    @apply bg-space-red/20 border-space-red/40 text-white;
+  }
+  
+  .word-card.spymaster-neutral {
+    @apply bg-gray-700/10 border-gray-600/40 text-white;
+  }
+  
+  .word-card.spymaster-assassin {
+    @apply bg-black/70 border-white/40 text-white;
+  }
 }
 
 /* Star Wars intro crawl */

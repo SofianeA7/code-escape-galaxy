@@ -14,14 +14,14 @@ export interface AIAgentData {
 }
 
 export const wordsList = [
-  'Lightsaber', 'Force', 'Droid', 'Falcon', 'Empire',
-  'Rebel', 'Jedi', 'Sith', 'Wookie', 'Tatooine',
-  'Vader', 'Luke', 'Death Star', 'Speeder', 'Blaster',
-  'Yoda', 'Padawan', 'Clone', 'Republic', 'Cruiser',
-  'Hyperspace', 'Walker', 'Stormtrooper', 'Jabba', 'Kyber',
-  'Mandalorian', 'Bounty', 'Hoth', 'Endor', 'Naboo',
-  'Podracer', 'Hangar', 'Senate', 'Cantina', 'Holocron',
-  'Coruscant', 'Starfighter', 'Trooper', 'Emperor', 'Smuggler'
+  'Sabre laser', 'Force', 'Droïde', 'Faucon', 'Empire',
+  'Rebelle', 'Jedi', 'Sith', 'Wookie', 'Tatooine',
+  'Vader', 'Luke', 'Étoile de la Mort', 'Speeder', 'Blaster',
+  'Yoda', 'Padawan', 'Clone', 'République', 'Croiseur',
+  'Hyperespace', 'Marcheur', 'Stormtrooper', 'Jabba', 'Kyber',
+  'Mandalorien', 'Prime', 'Hoth', 'Endor', 'Naboo',
+  'Module de course', 'Hangar', 'Sénat', 'Cantina', 'Holocron',
+  'Coruscant', 'Chasseur', 'Trooper', 'Empereur', 'Contrebandier'
 ];
 
 export const aiAgents: AIAgentData[] = [
@@ -29,53 +29,53 @@ export const aiAgents: AIAgentData[] = [
     id: 'agent-1',
     name: 'R2-D2',
     avatar: '🤖',
-    personality: 'Resourceful and determined',
+    personality: 'Débrouillard et déterminé',
     confidence: 8
   },
   {
     id: 'agent-2',
     name: 'C-3PO',
     avatar: '🧠',
-    personality: 'Anxious but knowledgeable',
+    personality: 'Anxieux mais érudit',
     confidence: 6
   },
   {
     id: 'agent-3',
     name: 'BB-8',
     avatar: '⚡',
-    personality: 'Enthusiastic and loyal',
+    personality: 'Enthousiaste et loyal',
     confidence: 7
   },
   {
     id: 'agent-4',
     name: 'K-2SO',
     avatar: '🔍',
-    personality: 'Blunt and strategic',
+    personality: 'Direct et stratégique',
     confidence: 9
   },
   {
     id: 'agent-5',
     name: 'IG-11',
     avatar: '🎯',
-    personality: 'Precise and protective',
+    personality: 'Précis et protecteur',
     confidence: 8
   }
 ];
 
 export const generateGameBoard = (): WordCard[] => {
-  // Shuffle the words list and take 25
+  // Mélange la liste de mots et en prend 25
   const shuffledWords = [...wordsList].sort(() => Math.random() - 0.5).slice(0, 25);
   
-  // Create board with word types
+  // Création du plateau avec types de mots
   const board: WordCard[] = shuffledWords.map((word, index) => {
-    // 9 blue, 8 red, 7 neutral, 1 assassin
+    // 9 bleus, 8 rouges, 6 neutres, 2 assassins
     let type: WordCard['type'] = 'neutral';
     
     if (index < 9) {
       type = 'blue';
     } else if (index < 17) {
       type = 'red';
-    } else if (index < 24) {
+    } else if (index < 23) {
       type = 'neutral';
     } else {
       type = 'assassin';
@@ -88,10 +88,24 @@ export const generateGameBoard = (): WordCard[] => {
     };
   });
   
-  // Shuffle the board so types are randomly distributed
+  // Mélange le plateau pour que les types soient distribués aléatoirement
   return board.sort(() => Math.random() - 0.5);
 };
 
 export const generateGameId = (): string => {
   return `mission-${Math.floor(Math.random() * 10000)}`;
+};
+
+export const getAgentGuess = (words: WordCard[], clue: string): number => {
+  // Cette fonction simule la façon dont un agent tente de deviner un mot basé sur l'indice
+  const unrevealedWords = words.filter(word => !word.revealed);
+  const blueWords = unrevealedWords.filter(word => word.type === 'blue');
+  
+  if (blueWords.length === 0) return -1;
+  
+  // Les agents vont toujours essayer de deviner un mot bleu!
+  // Simulation d'une "intelligence" très basique
+  return words.findIndex(word => 
+    word.type === 'blue' && !word.revealed
+  );
 };
