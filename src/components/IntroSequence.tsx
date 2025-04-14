@@ -36,9 +36,9 @@ const IntroSequence: React.FC<IntroSequenceProps> = ({ onComplete }) => {
           transition={{ duration: 2 }}
         >
           <div className="text-space-yellow text-4xl md:text-6xl font-starwars animate-text-glow mb-6">
-            CODE ESCAPE GALAXY
+            MISSION ÉVASION GALACTIQUE
           </div>
-          <p className="text-gray-400 mb-8">A long time ago in a galaxy far, far away...</p>
+          <p className="text-gray-400 mb-8">Il y a bien longtemps, dans une galaxie très lointaine...</p>
         </motion.div>
       ) : (
         <div className="star-wars-intro h-screen w-full">
@@ -49,20 +49,20 @@ const IntroSequence: React.FC<IntroSequenceProps> = ({ onComplete }) => {
             transition={{ duration: 1 }}
           >
             <div className="text-center animate-crawl">
-              <h2 className="text-4xl font-starwars mb-10">EPISODE I</h2>
-              <h3 className="text-3xl font-starwars mb-10">THE CODE ESCAPE</h3>
+              <h2 className="text-4xl font-starwars mb-10">ÉPISODE I</h2>
+              <h3 className="text-3xl font-starwars mb-10">L'ÉVASION CODÉE</h3>
               
               <p className="text-xl mb-8 leading-relaxed">
-                An alarm echoes through the DEATH STAR. Imperial forces have detected unauthorized access to their central systems.
+                Une alarme retentit sur l'ÉTOILE NOIRE. Les forces impériales ont détecté un accès non autorisé à leurs systèmes centraux.
               </p>
               <p className="text-xl mb-8 leading-relaxed">
-                You, a captured rebel spy, see an opportunity for escape. The only way out is to communicate with your AI team waiting in orbit.
+                Vous, un espion rebelle capturé, voyez une opportunité de fuite. Le seul moyen de sortir est de communiquer avec votre équipe IA en orbite.
               </p>
               <p className="text-xl mb-8 leading-relaxed">
-                To unlock the escape pods, you must transmit coded messages to your allies. But be careful - one wrong word could trigger the security systems and seal your fate forever...
+                Pour déverrouiller les pods d'évasion, vous devez transmettre des messages codés à vos alliés. Mais attention - un seul mot mal choisi pourrait déclencher le système de sécurité et sceller votre destin pour toujours...
               </p>
               <p className="text-xl mb-10 leading-relaxed">
-                Time is running out. The fate of the rebellion rests in your hands...
+                Le temps presse. Le sort de la rébellion repose entre vos mains...
               </p>
             </div>
           </motion.div>
@@ -76,7 +76,7 @@ const IntroSequence: React.FC<IntroSequenceProps> = ({ onComplete }) => {
         animate={{ opacity: 1 }}
         transition={{ delay: 5, duration: 1 }}
       >
-        Skip Intro
+        Ignorer l'introduction
       </motion.button>
     </div>
   );

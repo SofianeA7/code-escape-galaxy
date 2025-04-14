@@ -94,7 +94,7 @@ const HomeScreen = ({ onStartGame }: { onStartGame: () => void }) => {
           animate={{ y: 0 }}
           transition={{ delay: 0.3, duration: 0.5 }}
         >
-          CODE ESCAPE GALAXY
+          MISSION ÉVASION GALACTIQUE
         </motion.h1>
         <motion.p 
           className="text-lg text-gray-300 max-w-xl mx-auto"
@@ -102,7 +102,7 @@ const HomeScreen = ({ onStartGame }: { onStartGame: () => void }) => {
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.6, duration: 0.5 }}
         >
-          Lead a team of AI agents to crack the escape codes and flee from the Empire's grasp
+          Dirigez une équipe d'agents IA pour décrypter les codes et s'échapper des griffes de l'Empire
         </motion.p>
       </div>
       
@@ -113,38 +113,38 @@ const HomeScreen = ({ onStartGame }: { onStartGame: () => void }) => {
         transition={{ delay: 0.9, duration: 0.5 }}
       >
         <div className="space-card p-6">
-          <h2 className="text-space-yellow font-bold text-lg mb-3">THE MISSION</h2>
+          <h2 className="text-space-yellow font-bold text-lg mb-3">LA MISSION</h2>
           <p className="text-gray-300 text-sm mb-3">
-            As a captured rebel spy, you must use coded messages to communicate with your AI team.
+            En tant qu'espion rebelle capturé, vous devez utiliser des messages codés pour communiquer avec votre équipe IA.
           </p>
           <p className="text-gray-300 text-sm">
-            Give them clues to help identify the correct escape codes without triggering the Empire's security.
+            Donnez-leur des indices pour identifier les codes d'évasion sans déclencher la sécurité de l'Empire.
           </p>
         </div>
         
         <div className="space-card p-6">
-          <h2 className="text-space-yellow font-bold text-lg mb-3">YOUR TEAM</h2>
+          <h2 className="text-space-yellow font-bold text-lg mb-3">VOTRE ÉQUIPE</h2>
           <p className="text-gray-300 text-sm mb-3">
-            Work with a unique team of AI agents, each with their own personality and expertise.
+            Travaillez avec une équipe unique d'agents IA, chacun ayant sa propre personnalité et expertise.
           </p>
           <p className="text-gray-300 text-sm">
-            Guide them through the process of cracking the 9 code words needed for your escape.
+            Guidez-les pour décrypter les 9 mots de code nécessaires à votre évasion.
           </p>
         </div>
         
         <div className="space-card p-6">
-          <h2 className="text-space-yellow font-bold text-lg mb-3">THE DANGER</h2>
+          <h2 className="text-space-yellow font-bold text-lg mb-3">LE DANGER</h2>
           <p className="text-gray-300 text-sm mb-3">
-            One wrong word will trigger the alarm system, ending your mission immediately.
+            Un seul mot incorrect déclenchera le système d'alarme, mettant fin à votre mission immédiatement.
           </p>
           <p className="text-gray-300 text-sm">
-            Each transmission counts. Choose your clues carefully and trust your agents.
+            Chaque transmission compte. Choisissez vos indices avec soin et faites confiance à vos agents.
           </p>
         </div>
       </motion.div>
       
       <div className="mb-12">
-        <h2 className="text-space-yellow font-bold text-xl mb-4 text-center">LIVE MISSIONS</h2>
+        <h2 className="text-space-yellow font-bold text-xl mb-4 text-center">MISSIONS EN COURS</h2>
         <GameStream />
       </div>
       
@@ -159,7 +159,7 @@ const HomeScreen = ({ onStartGame }: { onStartGame: () => void }) => {
           className="star-wars-button text-lg py-4 px-10 flex items-center gap-3 mx-auto"
         >
           <Play size={20} />
-          <span>Start New Mission</span>
+          <span>Démarrer une nouvelle mission</span>
         </button>
       </motion.div>
     </motion.div>

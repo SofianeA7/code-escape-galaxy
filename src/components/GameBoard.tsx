@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import WordGrid from './WordGrid';
@@ -24,10 +23,8 @@ const GameBoard: React.FC<GameBoardProps> = ({
   const [activeAgent, setActiveAgent] = useState(0);
   const [agentThinking, setAgentThinking] = useState(false);
   
-  // Handle agent animations
   useEffect(() => {
     if (gameState.currentClue) {
-      // Simulate agent thinking about the clue
       setAgentThinking(true);
       const timer = setTimeout(() => {
         setAgentThinking(false);
@@ -37,7 +34,6 @@ const GameBoard: React.FC<GameBoardProps> = ({
     }
   }, [gameState.currentClue]);
   
-  // Rotate active agent periodically
   useEffect(() => {
     const timer = setInterval(() => {
       setActiveAgent(prev => (prev + 1) % gameState.selectedAgents.length);
@@ -63,24 +59,23 @@ const GameBoard: React.FC<GameBoardProps> = ({
       transition={{ duration: 0.5 }}
     >
       <div className="flex flex-col md:flex-row gap-4">
-        {/* Left side - Word grid */}
         <div className="flex-1">
           <div className="space-card p-4 mb-4">
             <div className="flex justify-between mb-4">
               <div>
-                <h2 className="text-space-yellow font-bold text-lg">MISSION CONTROL</h2>
-                <p className="text-sm text-gray-400">Find all blue words to escape</p>
+                <h2 className="text-space-yellow font-bold text-lg">POSTE DE CONTRÔLE DE MISSION</h2>
+                <p className="text-sm text-gray-400">Trouvez tous les mots bleus pour vous échapper</p>
               </div>
               <div className="flex items-center gap-2">
                 <Clock size={16} className="text-space-yellow" />
                 <span className="text-space-yellow font-bold">{gameState.turnsLeft}</span>
-                <span className="text-xs text-gray-400">turns left</span>
+                <span className="text-xs text-gray-400">tours restants</span>
               </div>
             </div>
             
             {gameState.currentClue && (
               <div className="mb-4 p-3 bg-space-darkblue rounded-md border border-space-blue/50">
-                <div className="text-sm text-gray-400">Current clue:</div>
+                <div className="text-sm text-gray-400">Indice actuel :</div>
                 <div className="flex justify-between items-center">
                   <div className="text-space-yellow font-bold text-xl">{gameState.currentClue}</div>
                   <div className="bg-space-blue/20 rounded-full px-2 py-1 text-space-yellow font-bold">
@@ -88,22 +83,20 @@ const GameBoard: React.FC<GameBoardProps> = ({
                   </div>
                 </div>
                 <div className="mt-2 text-sm text-gray-400">
-                  {gameState.guessedThisTurn}/{gameState.currentNumber} guesses made
+                  {gameState.guessedThisTurn}/{gameState.currentNumber} tentatives effectuées
                 </div>
               </div>
             )}
             
-            {/* Word grid */}
             <WordGrid 
               words={gameState.wordGrid} 
               onWordClick={onGuessWord}
               disabled={!isGuessingPhase}
             />
             
-            {/* Progress */}
             <div className="mt-4 flex justify-between items-center">
               <div>
-                <div className="text-sm text-gray-400">Mission Progress</div>
+                <div className="text-sm text-gray-400">Progression de la mission</div>
                 <div className="flex items-center gap-1">
                   <Rocket size={16} className="text-space-blue" />
                   <span className="text-space-yellow font-bold">
@@ -117,17 +110,16 @@ const GameBoard: React.FC<GameBoardProps> = ({
                   className="star-wars-button text-sm py-1"
                   onClick={onEndTurn}
                 >
-                  End Turn
+                  Terminer le tour
                 </button>
               )}
             </div>
           </div>
         </div>
 
-        {/* Right side - AI team and controls */}
         <div className="md:w-72">
           <div className="space-card p-4 mb-4">
-            <h2 className="text-space-yellow font-bold text-lg mb-3">REBEL AGENTS</h2>
+            <h2 className="text-space-yellow font-bold text-lg mb-3">AGENTS REBELLES</h2>
             
             <div className="space-y-3">
               {gameState.selectedAgents.map((agent, i) => (
@@ -143,11 +135,11 @@ const GameBoard: React.FC<GameBoardProps> = ({
           
           {!isGuessingPhase && (
             <div className="space-card p-4">
-              <h2 className="text-space-yellow font-bold text-lg mb-3">TRANSMIT CODE</h2>
+              <h2 className="text-space-yellow font-bold text-lg mb-3">TRANSMETTRE UN CODE</h2>
               
               <form onSubmit={handleSubmitClue}>
                 <div className="mb-3">
-                  <label className="text-sm text-gray-400 mb-1 block">Clue Word</label>
+                  <label className="text-sm text-gray-400 mb-1 block">Mot d'indice</label>
                   <div className="relative">
                     <Search size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                     <input
@@ -155,14 +147,14 @@ const GameBoard: React.FC<GameBoardProps> = ({
                       value={clue}
                       onChange={(e) => setClue(e.target.value)}
                       className="w-full bg-space-darkblue border border-gray-700 rounded-md pl-9 pr-3 py-2 text-white focus:outline-none focus:border-space-blue"
-                      placeholder="Enter a clue..."
+                      placeholder="Entrez un indice..."
                       required
                     />
                   </div>
                 </div>
                 
                 <div className="mb-4">
-                  <label className="text-sm text-gray-400 mb-1 block">Number of Words</label>
+                  <label className="text-sm text-gray-400 mb-1 block">Nombre de mots</label>
                   <select
                     value={number}
                     onChange={(e) => setNumber(Number(e.target.value))}
@@ -179,7 +171,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
                   className="star-wars-button w-full flex items-center justify-center gap-2"
                 >
                   <Send size={16} />
-                  <span>Transmit Clue</span>
+                  <span>Transmettre l'indice</span>
                 </button>
               </form>
             </div>

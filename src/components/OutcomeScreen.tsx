@@ -64,26 +64,26 @@ const OutcomeScreen: React.FC<OutcomeScreenProps> = ({
             </motion.div>
             
             <h2 className="text-3xl font-starwars text-space-yellow mb-4 animate-text-glow">
-              MISSION ACCOMPLISHED
+              MISSION ACCOMPLIE
             </h2>
             
             <p className="text-gray-300 mb-6">
-              Against all odds, you've successfully escaped the Death Star. Your quick thinking and code transmission skills have saved the day!
+              Contre toute attente, vous avez réussi à vous échapper de l'Étoile Noire. Votre rapidité d'esprit et vos compétences en transmission de codes ont sauvé la situation !
             </p>
             
             <div className="space-y-3 mb-6">
               <div className="flex justify-between bg-space-darkblue/50 p-3 rounded">
-                <span className="text-gray-300">Words found:</span>
+                <span className="text-gray-300">Mots trouvés :</span>
                 <span className="text-space-blue font-bold">{revealedBlueWords}/9</span>
               </div>
               
               <div className="flex justify-between bg-space-darkblue/50 p-3 rounded">
-                <span className="text-gray-300">Turns remaining:</span>
+                <span className="text-gray-300">Tours restants :</span>
                 <span className="text-space-blue font-bold">{gameState.turnsLeft}</span>
               </div>
               
               <div className="flex justify-between bg-space-darkblue/50 p-3 rounded">
-                <span className="text-gray-300">Final score:</span>
+                <span className="text-gray-300">Score final :</span>
                 <span className="text-space-yellow font-bold">{gameState.score}</span>
               </div>
             </div>
@@ -94,7 +94,7 @@ const OutcomeScreen: React.FC<OutcomeScreenProps> = ({
                 className="star-wars-button flex-1 text-sm py-2 flex items-center justify-center gap-2"
               >
                 <RotateCcw size={16} />
-                <span>New Mission</span>
+                <span>Nouvelle Mission</span>
               </button>
               
               <button
@@ -102,7 +102,7 @@ const OutcomeScreen: React.FC<OutcomeScreenProps> = ({
                 className="star-wars-button flex-1 text-sm py-2 flex items-center justify-center gap-2"
               >
                 <Rocket size={16} />
-                <span>Return to Base</span>
+                <span>Retour à la base</span>
               </button>
             </div>
           </motion.div>
@@ -122,26 +122,26 @@ const OutcomeScreen: React.FC<OutcomeScreenProps> = ({
             </motion.div>
             
             <h2 className="text-3xl font-starwars text-space-red mb-4">
-              MISSION FAILED
+              MISSION ÉCHOUÉE
             </h2>
             
             <p className="text-gray-300 mb-6">
               {assassinRevealed ? (
-                <>The word <span className="text-space-red font-bold">{assassinWord}</span> triggered the security system! Imperial forces have captured you.</>
+                <>Le mot <span className="text-space-red font-bold">{assassinWord}</span> a déclenché le système de sécurité ! Les forces impériales vous ont capturé.</>
               ) : (
-                <>You've run out of transmission attempts. The escape pod remains locked as Imperial forces close in.</>
+                <>Vous avez épuisé vos tentatives de transmission. Le pod d'évasion reste verrouillé alors que les forces impériales se rapprochent.</>
               )}
             </p>
             
             <div className="space-y-3 mb-6">
               <div className="flex justify-between bg-space-darkblue/50 p-3 rounded">
-                <span className="text-gray-300">Words found:</span>
+                <span className="text-gray-300">Mots trouvés :</span>
                 <span className="text-space-blue font-bold">{revealedBlueWords}/9</span>
               </div>
               
               <div className="flex justify-between bg-space-darkblue/50 p-3 rounded">
-                <span className="text-gray-300">Mission Status:</span>
-                <span className="text-space-red font-bold">TERMINATED</span>
+                <span className="text-gray-300">Statut de la mission :</span>
+                <span className="text-space-red font-bold">TERMINÉE</span>
               </div>
             </div>
             
@@ -151,7 +151,7 @@ const OutcomeScreen: React.FC<OutcomeScreenProps> = ({
                 className="star-wars-button flex-1 text-sm py-2 flex items-center justify-center gap-2"
               >
                 <RotateCcw size={16} />
-                <span>Try Again</span>
+                <span>Réessayer</span>
               </button>
               
               <button
@@ -159,7 +159,7 @@ const OutcomeScreen: React.FC<OutcomeScreenProps> = ({
                 className="star-wars-button flex-1 text-sm py-2 flex items-center justify-center gap-2"
               >
                 <Rocket size={16} />
-                <span>Return to Base</span>
+                <span>Retour à la base</span>
               </button>
             </div>
           </motion.div>
