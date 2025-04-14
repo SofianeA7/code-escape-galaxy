@@ -1,6 +1,6 @@
 
 import { useState, useCallback } from 'react';
-import { WordCard, AIAgentData, generateGameBoard, aiAgents } from '../data/gameData';
+import { WordCard, AIAgentData, generateGameBoard, aiAgents, generateGameId } from '../data/gameData';
 
 export type GamePhase = 'home' | 'intro' | 'game' | 'success' | 'failure';
 
@@ -40,7 +40,7 @@ export function useGameState() {
     const gameBoard = generateGameBoard();
     
     setGameState({
-      gameId: `mission-${Math.floor(Math.random() * 10000)}`,
+      gameId: generateGameId(),
       phase: 'intro',
       wordGrid: gameBoard,
       selectedAgents: randomAgents,
@@ -98,7 +98,7 @@ export function useGameState() {
     } else if (wordType === 'assassin') {
       newPhase = 'failure';
     } else {
-      // Red or neutral - end turn
+      // Neutral - end turn
       newTurnsLeft -= 1;
       newGuessedThisTurn = gameState.currentNumber + 1; // Force end turn
       
