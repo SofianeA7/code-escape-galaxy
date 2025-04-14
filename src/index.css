@@ -77,10 +77,6 @@
     @apply bg-space-blue/30 border-space-blue text-white;
   }
   
-  .word-card.red {
-    @apply bg-space-red/30 border-space-red text-white;
-  }
-  
   .word-card.neutral {
     @apply bg-gray-700/30 border-gray-600 text-gray-300;
   }
@@ -92,10 +88,6 @@
   /* Classes pour la vue spymaster */
   .word-card.spymaster-blue {
     @apply bg-space-blue/20 border-space-blue/40 text-white;
-  }
-  
-  .word-card.spymaster-red {
-    @apply bg-space-red/20 border-space-red/40 text-white;
   }
   
   .word-card.spymaster-neutral {
