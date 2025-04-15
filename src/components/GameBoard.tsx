@@ -1,10 +1,10 @@
 
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import WordGrid from './WordGrid';
 import AIAgent from './AIAgent';
 import { GameState } from '../hooks/useGameState';
-import { Search, Send, Rocket, Clock } from 'lucide-react';
+import { Search, Send, Rocket, Clock, Brain } from 'lucide-react';
 import { getAgentGuess } from '../data/gameData';
 
 interface GameBoardProps {
@@ -24,10 +24,14 @@ const GameBoard: React.FC<GameBoardProps> = ({
   const [number, setNumber] = useState(1);
   const [agentThinking, setAgentThinking] = useState(false);
   const [suggestedIndex, setSuggestedIndex] = useState<number | null>(null);
+  const [showReasoningPanel, setShowReasoningPanel] = useState(false);
   
   useEffect(() => {
     if (gameState.currentClue) {
       setAgentThinking(true);
+      // Montrer automatiquement le panneau de raisonnement
+      setShowReasoningPanel(true);
+      
       const timer = setTimeout(() => {
         setAgentThinking(false);
         
@@ -102,6 +106,51 @@ const GameBoard: React.FC<GameBoardProps> = ({
               </div>
             )}
             
+            {/* Agent Reasoning Panel - New Feature */}
+            {isGuessingPhase && showReasoningPanel && (
+              <AnimatePresence>
+                <motion.div 
+                  className="mb-4 p-4 bg-space-darkblue/80 border border-space-blue/30 rounded-md"
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <Brain size={18} className="text-space-blue" />
+                      <h3 className="text-space-yellow font-bold">PROCESSUS DE RÉFLEXION</h3>
+                    </div>
+                    <button 
+                      className="text-gray-400 hover:text-space-yellow"
+                      onClick={() => setShowReasoningPanel(!showReasoningPanel)}
+                    >
+                      {showReasoningPanel ? '−' : '+'}
+                    </button>
+                  </div>
+                  
+                  <div className="flex items-start gap-3">
+                    <div className="mt-1 w-8 h-8 rounded-full bg-space-darkblue border border-space-blue flex items-center justify-center text-xl">
+                      {activeAgent.avatar}
+                    </div>
+                    <div className="flex-1">
+                      <div className="text-space-blue font-bold">{activeAgent.name} réfléchit...</div>
+                      <div className="text-gray-300 mt-1">
+                        {agentThinking ? (
+                          <div className="flex items-center gap-2">
+                            <div className="w-2 h-2 bg-space-blue rounded-full animate-ping"></div>
+                            <span>Analyse en cours de l'indice "{gameState.currentClue}"...</span>
+                          </div>
+                        ) : (
+                          gameState.agentReasoning
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              </AnimatePresence>
+            )}
+            
             <WordGrid 
               words={gameState.wordGrid} 
               onWordClick={onGuessWord}
@@ -163,6 +212,17 @@ const GameBoard: React.FC<GameBoardProps> = ({
                 );
               })}
             </div>
+            
+            {/* Bouton pour afficher le raisonnement */}
+            {isGuessingPhase && (
+              <button
+                className="w-full mt-3 star-wars-button text-sm flex items-center justify-center gap-2"
+                onClick={() => setShowReasoningPanel(!showReasoningPanel)}
+              >
+                <Brain size={14} />
+                {showReasoningPanel ? "Masquer le raisonnement" : "Voir le raisonnement"}
+              </button>
+            )}
           </div>
           
           {!isGuessingPhase && (

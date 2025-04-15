@@ -76,6 +76,7 @@ export function useGameState() {
   const submitClue = useCallback((clue: string, number: number) => {
     setGameState(prev => {
       const activeAgent = prev.selectedAgents[prev.activeAgentIndex];
+      // Générer un raisonnement détaillé basé sur la personnalité de l'agent actif
       const reasoning = activeAgent.reasoningStyle(clue, prev.wordGrid);
       
       return {
@@ -153,7 +154,7 @@ export function useGameState() {
     setGameState(prev => {
       const newActiveAgentIndex = (prev.activeAgentIndex + 1) % prev.selectedAgents.length;
       const nextAgent = prev.selectedAgents[newActiveAgentIndex];
-      const newReasoning = nextAgent.reasoningStyle('', prev.wordGrid);
+      const newReasoning = nextAgent.reasoningStyle(prev.currentClue, prev.wordGrid);
       
       return {
         ...prev,
