@@ -1,4 +1,3 @@
-
 export interface WordCard {
   word: string;
   type: 'blue' | 'neutral' | 'assassin';
@@ -11,7 +10,59 @@ export interface AIAgentData {
   avatar: string;
   personality: string;
   confidence: number; // 1-10
+  reasoningStyle: (clue: string, words: WordCard[]) => string;
 }
+
+export const aiAgents: AIAgentData[] = [
+  {
+    id: 'agent-1',
+    name: 'Yoda',
+    avatar: '👽',
+    personality: 'Sage et mystérieux',
+    confidence: 9,
+    reasoningStyle: (clue, words) => {
+      const unrevealed = words.filter(word => !word.revealed).map(w => w.word);
+      const randomWords = unrevealed.slice(0, 3).join(", ");
+      return `Mmm, à "${clue}" lié, ce mot être doit. ${randomWords}, ces mots examiner je dois. Forte avec celui-ci, la Force est.`;
+    }
+  },
+  {
+    id: 'agent-2',
+    name: 'Nicolas Tesla',
+    avatar: '⚡',
+    personality: 'Génie inventif',
+    confidence: 8,
+    reasoningStyle: (clue, words) => {
+      const unrevealed = words.filter(word => !word.revealed).map(w => w.word);
+      const randomWord = unrevealed[Math.floor(Math.random() * unrevealed.length)];
+      return `Hypothèse: l'indice "${clue}" suggère une connexion électromagnétique. Procédons par élimination des variables. Si nous considérons l'étymologie et les champs sémantiques, le mot "${randomWord}" présente une corrélation de 87% avec notre objectif.`;
+    }
+  },
+  {
+    id: 'agent-3',
+    name: 'Jack l\'Éventreur',
+    avatar: '🔪',
+    personality: 'Mystérieux et calculateur',
+    confidence: 7,
+    reasoningStyle: (clue, words) => {
+      const unrevealed = words.filter(word => !word.revealed).map(w => w.word);
+      const randomWord = unrevealed[Math.floor(Math.random() * unrevealed.length)];
+      return `*rire sinistre* Mon cher Watson, je trancherai ce mystère avec précision. "${clue}" évoque un souvenir sanglant... Le mot "${randomWord}" nous appelle depuis les ombres de Whitechapel.`;
+    }
+  },
+  {
+    id: 'agent-4',
+    name: 'Gengis Khan',
+    avatar: '🏹',
+    personality: 'Conquérant impitoyable',
+    confidence: 10,
+    reasoningStyle: (clue, words) => {
+      const unrevealed = words.filter(word => !word.revealed).map(w => w.word);
+      const randomWord = unrevealed[Math.floor(Math.random() * unrevealed.length)];
+      return `Par les steppes de Mongolie! L'indice "${clue}" sera conquis comme mes ennemis. J'écrase les doutes et plante mon étendard sur le mot "${randomWord}"! Ma horde victorieuse ne connaît pas la défaite!`;
+    }
+  }
+];
 
 export const wordsList = [
   'Sabre laser', 'Force', 'Droïde', 'Faucon', 'Empire',
@@ -22,44 +73,6 @@ export const wordsList = [
   'Mandalorien', 'Prime', 'Hoth', 'Endor', 'Naboo',
   'Module de course', 'Hangar', 'Sénat', 'Cantina', 'Holocron',
   'Coruscant', 'Chasseur', 'Trooper', 'Empereur', 'Contrebandier'
-];
-
-export const aiAgents: AIAgentData[] = [
-  {
-    id: 'agent-1',
-    name: 'R2-D2',
-    avatar: '🤖',
-    personality: 'Débrouillard et déterminé',
-    confidence: 8
-  },
-  {
-    id: 'agent-2',
-    name: 'C-3PO',
-    avatar: '🧠',
-    personality: 'Anxieux mais érudit',
-    confidence: 6
-  },
-  {
-    id: 'agent-3',
-    name: 'BB-8',
-    avatar: '⚡',
-    personality: 'Enthousiaste et loyal',
-    confidence: 7
-  },
-  {
-    id: 'agent-4',
-    name: 'K-2SO',
-    avatar: '🔍',
-    personality: 'Direct et stratégique',
-    confidence: 9
-  },
-  {
-    id: 'agent-5',
-    name: 'IG-11',
-    avatar: '🎯',
-    personality: 'Précis et protecteur',
-    confidence: 8
-  }
 ];
 
 export const generateGameBoard = (): WordCard[] => {

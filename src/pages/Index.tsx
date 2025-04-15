@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { useGameState } from '../hooks/useGameState';
 import GameStream from '../components/GameStream';
 import IntroSequence from '../components/IntroSequence';
+import AgentsPresentation from '../components/AgentsPresentation';
 import GameBoard from '../components/GameBoard';
 import OutcomeScreen from '../components/OutcomeScreen';
 import { Play } from 'lucide-react';
@@ -12,6 +13,7 @@ const Index = () => {
   const { 
     gameState, 
     startNewGame, 
+    goToAgentsPhase,
     goToGamePhase, 
     submitClue,
     guessWord,
@@ -28,7 +30,10 @@ const Index = () => {
   const renderGamePhase = () => {
     switch (gameState.phase) {
       case 'intro':
-        return <IntroSequence onComplete={goToGamePhase} />;
+        return <IntroSequence onComplete={goToAgentsPhase} />;
+      
+      case 'agents':
+        return <AgentsPresentation agents={gameState.selectedAgents} onComplete={goToGamePhase} />;
         
       case 'game':
         return (
@@ -125,10 +130,10 @@ const HomeScreen = ({ onStartGame }: { onStartGame: () => void }) => {
         <div className="space-card p-6">
           <h2 className="text-space-yellow font-bold text-lg mb-3">VOTRE ÉQUIPE</h2>
           <p className="text-gray-300 text-sm mb-3">
-            Travaillez avec une équipe unique d'agents IA, chacun ayant sa propre personnalité et expertise.
+            Travaillez avec une équipe unique d'agents IA historiques, chacun ayant sa propre personnalité et expertise.
           </p>
           <p className="text-gray-300 text-sm">
-            Guidez-les pour décrypter les 9 mots de code nécessaires à votre évasion.
+            De Yoda à Gengis Khan, guidez-les pour décrypter les 9 mots de code nécessaires à votre évasion.
           </p>
         </div>
         

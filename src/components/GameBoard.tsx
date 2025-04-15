@@ -22,7 +22,6 @@ const GameBoard: React.FC<GameBoardProps> = ({
 }) => {
   const [clue, setClue] = useState('');
   const [number, setNumber] = useState(1);
-  const [activeAgent, setActiveAgent] = useState(0);
   const [agentThinking, setAgentThinking] = useState(false);
   const [suggestedIndex, setSuggestedIndex] = useState<number | null>(null);
   
@@ -55,14 +54,6 @@ const GameBoard: React.FC<GameBoardProps> = ({
     }
   }, [suggestedIndex, agentThinking, onGuessWord]);
   
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setActiveAgent(prev => (prev + 1) % gameState.selectedAgents.length);
-    }, 8000);
-    
-    return () => clearInterval(timer);
-  }, [gameState.selectedAgents.length]);
-  
   const handleSubmitClue = (e: React.FormEvent) => {
     e.preventDefault();
     if (clue.trim() && number > 0) {
@@ -72,6 +63,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
   };
   
   const isGuessingPhase = !!gameState.currentClue;
+  const activeAgent = gameState.selectedAgents[gameState.activeAgentIndex];
   
   return (
     <motion.div
@@ -147,15 +139,17 @@ const GameBoard: React.FC<GameBoardProps> = ({
             <div className="space-y-3">
               {gameState.selectedAgents.map((agent, i) => {
                 // L'agent actif est celui qui parle ou suggère actuellement
-                const isActive = i === activeAgent;
-                const isSpeaking = agentThinking && isActive;
+                const isActive = i === gameState.activeAgentIndex;
+                const isSpeaking = (agentThinking && isActive) || (isActive && gameState.agentReasoning && !agentThinking);
                 const isSuggesting = !agentThinking && suggestedIndex !== null && isActive;
                 
                 let agentMessage = "";
-                if (isSpeaking) {
+                if (agentThinking && isActive) {
                   agentMessage = "Analyse en cours... Je réfléchis à l'indice.";
                 } else if (isSuggesting && suggestedIndex !== null) {
                   agentMessage = `Je suggère le mot "${gameState.wordGrid[suggestedIndex].word}"!`;
+                } else if (isActive && gameState.agentReasoning) {
+                  agentMessage = gameState.agentReasoning;
                 }
                 
                 return (

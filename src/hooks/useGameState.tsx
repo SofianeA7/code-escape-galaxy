@@ -2,7 +2,7 @@
 import { useState, useCallback } from 'react';
 import { WordCard, AIAgentData, generateGameBoard, aiAgents, generateGameId } from '../data/gameData';
 
-export type GamePhase = 'home' | 'intro' | 'game' | 'success' | 'failure';
+export type GamePhase = 'home' | 'intro' | 'agents' | 'game' | 'success' | 'failure';
 
 export interface GameState {
   gameId: string;
@@ -15,6 +15,8 @@ export interface GameState {
   guessedThisTurn: number;
   turnsLeft: number;
   score: number;
+  agentReasoning: string;
+  activeAgentIndex: number;
 }
 
 export function useGameState() {
@@ -28,7 +30,9 @@ export function useGameState() {
     remainingBlueWords: 9,
     guessedThisTurn: 0,
     turnsLeft: 10,
-    score: 0
+    score: 0,
+    agentReasoning: '',
+    activeAgentIndex: 0
   });
 
   const startNewGame = useCallback(() => {
@@ -49,8 +53,17 @@ export function useGameState() {
       remainingBlueWords: 9,
       guessedThisTurn: 0,
       turnsLeft: 10,
-      score: 0
+      score: 0,
+      agentReasoning: '',
+      activeAgentIndex: 0
     });
+  }, []);
+
+  const goToAgentsPhase = useCallback(() => {
+    setGameState(prev => ({
+      ...prev,
+      phase: 'agents'
+    }));
   }, []);
 
   const goToGamePhase = useCallback(() => {
@@ -61,12 +74,18 @@ export function useGameState() {
   }, []);
 
   const submitClue = useCallback((clue: string, number: number) => {
-    setGameState(prev => ({
-      ...prev,
-      currentClue: clue,
-      currentNumber: number,
-      guessedThisTurn: 0
-    }));
+    setGameState(prev => {
+      const activeAgent = prev.selectedAgents[prev.activeAgentIndex];
+      const reasoning = activeAgent.reasoningStyle(clue, prev.wordGrid);
+      
+      return {
+        ...prev,
+        currentClue: clue,
+        currentNumber: number,
+        guessedThisTurn: 0,
+        agentReasoning: reasoning
+      };
+    });
   }, []);
 
   const guessWord = useCallback((index: number) => {
@@ -85,6 +104,8 @@ export function useGameState() {
     let newScore = gameState.score;
     let newTurnsLeft = gameState.turnsLeft;
     let newGuessedThisTurn = gameState.guessedThisTurn + 1;
+    let newActiveAgentIndex = (gameState.activeAgentIndex + 1) % gameState.selectedAgents.length;
+    let newAgentReasoning = '';
     
     if (wordType === 'blue') {
       newRemainingBlueWords -= 1;
@@ -94,6 +115,10 @@ export function useGameState() {
       if (newRemainingBlueWords === 0) {
         newPhase = 'success';
         newScore += newTurnsLeft * 50; // Bonus points for remaining turns
+      } else if (newGuessedThisTurn >= gameState.currentNumber) {
+        // Si on a fini nos tentatives pour ce tour, générer un nouveau raisonnement
+        const nextAgent = gameState.selectedAgents[newActiveAgentIndex];
+        newAgentReasoning = nextAgent.reasoningStyle(gameState.currentClue, newGrid);
       }
     } else if (wordType === 'assassin') {
       newPhase = 'failure';
@@ -104,6 +129,10 @@ export function useGameState() {
       
       if (newTurnsLeft === 0) {
         newPhase = 'failure';
+      } else {
+        // Générer un nouveau raisonnement pour le prochain agent
+        const nextAgent = gameState.selectedAgents[newActiveAgentIndex];
+        newAgentReasoning = nextAgent.reasoningStyle(gameState.currentClue, newGrid);
       }
     }
     
@@ -114,17 +143,27 @@ export function useGameState() {
       remainingBlueWords: newRemainingBlueWords,
       guessedThisTurn: newGuessedThisTurn,
       turnsLeft: newTurnsLeft,
-      score: newScore
+      score: newScore,
+      activeAgentIndex: newActiveAgentIndex,
+      agentReasoning: newAgentReasoning
     }));
   }, [gameState]);
 
   const endTurn = useCallback(() => {
-    setGameState(prev => ({
-      ...prev,
-      turnsLeft: prev.turnsLeft - 1,
-      currentClue: '',
-      currentNumber: 0
-    }));
+    setGameState(prev => {
+      const newActiveAgentIndex = (prev.activeAgentIndex + 1) % prev.selectedAgents.length;
+      const nextAgent = prev.selectedAgents[newActiveAgentIndex];
+      const newReasoning = nextAgent.reasoningStyle('', prev.wordGrid);
+      
+      return {
+        ...prev,
+        turnsLeft: prev.turnsLeft - 1,
+        currentClue: '',
+        currentNumber: 0,
+        activeAgentIndex: newActiveAgentIndex,
+        agentReasoning: newReasoning
+      };
+    });
   }, []);
 
   const resetToHome = useCallback(() => {
@@ -137,6 +176,7 @@ export function useGameState() {
   return {
     gameState,
     startNewGame,
+    goToAgentsPhase,
     goToGamePhase,
     submitClue,
     guessWord,
