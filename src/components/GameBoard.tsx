@@ -145,6 +145,10 @@ const GameBoard: React.FC<GameBoardProps> = ({
       setClue('');
     }
   };
+
+  const handleNumberChange = (selectedNumber: number) => {
+    setNumber(selectedNumber);
+  };
   
   const isGuessingPhase = gameState.currentClue ? true : false;
   const activeAgent = gameState.selectedAgents[gameState.activeAgentIndex];
@@ -316,7 +320,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
                       <button
                         key={n}
                         type="button"
-                        onClick={() => setNumber(n)}
+                        onClick={() => handleNumberChange(n)}
                         className={`flex-1 py-2 rounded-md transition-colors ${
                           number === n 
                             ? 'bg-space-yellow text-black' 
