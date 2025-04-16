@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import WordGrid from './WordGrid';
@@ -142,7 +141,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
   
   const handleSubmitClue = (e: React.FormEvent) => {
     e.preventDefault();
-    if (clue.trim() && number > 0) {
+    if (clue.trim()) {
       onSubmitClue(clue.trim(), number);
       setClue('');
     }
@@ -287,15 +286,22 @@ const GameBoard: React.FC<GameBoardProps> = ({
                 
                 <div className="mb-4">
                   <label className="text-sm text-gray-400 mb-1 block">Nombre de mots</label>
-                  <select
-                    value={number}
-                    onChange={(e) => setNumber(Number(e.target.value))}
-                    className="w-full bg-space-darkblue border border-gray-700 rounded-md px-3 py-2 text-white focus:outline-none focus:border-space-blue"
-                  >
-                    {[1, 2, 3, 4, 5].map(n => (
-                      <option key={n} value={n}>{n}</option>
+                  <div className="flex justify-between gap-2">
+                    {[1, 2, 3, 4].map(n => (
+                      <button
+                        key={n}
+                        type="button"
+                        onClick={() => setNumber(n)}
+                        className={`flex-1 py-2 rounded-md transition-colors ${
+                          number === n 
+                            ? 'bg-space-yellow text-black' 
+                            : 'bg-space-darkblue border border-gray-700 text-gray-400 hover:bg-space-darkblue/50'
+                        }`}
+                      >
+                        {n}
+                      </button>
                     ))}
-                  </select>
+                  </div>
                 </div>
                 
                 <button
