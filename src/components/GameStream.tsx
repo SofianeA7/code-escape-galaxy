@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { motion } from 'framer-motion';
 
@@ -13,7 +14,7 @@ const GameStream: React.FC = () => {
       
       <div className="absolute top-4 left-4 bg-space-red px-3 py-1 rounded-full text-xs font-bold z-20 flex items-center">
         <span className="animate-pulse h-2 w-2 bg-white rounded-full mr-2"></span>
-        Replay
+        MISSION EN DIRECT
       </div>
       
       {/* Simulated game display */}
