@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import WordGrid from './WordGrid';
 import AIAgent from './AIAgent';
 import { GameState } from '../hooks/useGameState';
-import { Search, Send, Rocket, Clock, Brain, MessageSquare, Home, Check, X } from 'lucide-react';
+import { Search, Send, Rocket, Clock, Brain, MessageSquare, Home, Check, X, Planet, Satellite, Star, Moon } from 'lucide-react';
 import { getAgentGuess, AIAgentData } from '../data/gameData';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 
@@ -32,6 +32,18 @@ const GameBoard: React.FC<GameBoardProps> = ({
   const [voteTimer, setVoteTimer] = useState(0);
   const [finalVote, setFinalVote] = useState<number | null>(null);
   const [chatMessages, setChatMessages] = useState<{agentIndex: number; message: string; type: 'reasoning' | 'vote' | 'critique'}[]>([]);
+  const [starPositions, setStarPositions] = useState<{top: string, left: string, size: string, delay: string}[]>([]);
+  
+  // Generate random stars for background
+  useEffect(() => {
+    const stars = Array.from({ length: 50 }).map(() => ({
+      top: `${Math.random() * 100}%`,
+      left: `${Math.random() * 100}%`,
+      size: `${Math.random() * 3 + 1}px`,
+      delay: `${Math.random() * 5}s`
+    }));
+    setStarPositions(stars);
+  }, []);
   
   useEffect(() => {
     if (gameState.currentClue) {
@@ -138,6 +150,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
   
   const isGuessingPhase = gameState.currentClue ? true : false;
   const activeAgent = gameState.selectedAgents[gameState.activeAgentIndex];
+  const agentsFinishedGuessing = gameState.guessedThisTurn >= gameState.currentNumber;
 
   const generateAgentCritique = (agent: AIAgentData, currentClue: string) => {
     switch(agent.name) {
@@ -156,11 +169,37 @@ const GameBoard: React.FC<GameBoardProps> = ({
   
   return (
     <motion.div
-      className="w-full max-w-6xl mx-auto"
+      className="w-full max-w-6xl mx-auto relative"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
+      {/* Background stars */}
+      {starPositions.map((star, i) => (
+        <div 
+          key={i}
+          className="star absolute rounded-full bg-white animate-pulse"
+          style={{
+            top: star.top,
+            left: star.left,
+            width: star.size,
+            height: star.size,
+            animationDelay: star.delay
+          }}
+        />
+      ))}
+      
+      {/* Floating planets */}
+      <div className="absolute -top-10 right-10 text-space-blue opacity-30 animate-float">
+        <Planet size={80} />
+      </div>
+      <div className="absolute bottom-20 left-5 text-gray-700 opacity-20 animate-float" style={{ animationDelay: '1.5s' }}>
+        <Moon size={60} />
+      </div>
+      <div className="absolute top-40 -left-10 text-gray-600 opacity-20 animate-float" style={{ animationDelay: '2.2s' }}>
+        <Satellite size={40} />
+      </div>
+      
       <div className="flex justify-end mb-4">
         <button
           onClick={onHome}
@@ -173,7 +212,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
       
       <div className="flex flex-col lg:flex-row gap-4">
         <div className="lg:w-1/2">
-          <div className="space-card p-4 mb-4">
+          <div className="space-card p-4 mb-4 backdrop-blur-md">
             <div className="flex justify-between mb-4">
               <div>
                 <h2 className="text-space-yellow font-bold text-lg">POSTE DE CONTRÔLE DE MISSION</h2>
@@ -224,7 +263,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
             <WordGrid 
               words={gameState.wordGrid} 
               onWordClick={onGuessWord}
-              disabled={!isGuessingPhase || finalVote !== null}
+              disabled={!isGuessingPhase || finalVote !== null || agentsFinishedGuessing}
               showSpymasterView={true}
             />
             
@@ -239,7 +278,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
                 </div>
               </div>
               
-              {isGuessingPhase && gameState.guessedThisTurn < gameState.currentNumber && (
+              {isGuessingPhase && !agentsFinishedGuessing && (
                 <button
                   className="star-wars-button text-sm py-1"
                   onClick={onEndTurn}
@@ -251,8 +290,13 @@ const GameBoard: React.FC<GameBoardProps> = ({
           </div>
           
           {!isGuessingPhase && (
-            <div className="space-card p-4">
-              <h2 className="text-space-yellow font-bold text-lg mb-3">TRANSMETTRE UN CODE</h2>
+            <div className="space-card p-4 backdrop-blur-md relative overflow-hidden">
+              {/* Holographic lights effect */}
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-space-blue/5 to-transparent animate-pulse"></div>
+              
+              <h2 className="text-space-yellow font-bold text-lg mb-3 flex items-center">
+                <Satellite size={16} className="mr-2" /> TRANSMETTRE UN CODE
+              </h2>
               
               <form onSubmit={handleSubmitClue}>
                 <div className="mb-3">
@@ -303,10 +347,18 @@ const GameBoard: React.FC<GameBoardProps> = ({
         </div>
 
         <div className="lg:w-1/2">
-          <div className="space-card p-4 h-full">
+          <div className="space-card p-4 h-full backdrop-blur-md relative overflow-hidden">
+            {/* Space-like scanner effect */}
+            <div className="absolute inset-0 opacity-10">
+              <div className="w-full h-1 bg-space-blue absolute top-0 animate-[scan_4s_ease-in-out_infinite]"></div>
+            </div>
+            
             <div className="flex items-center justify-between mb-3">
-              <h2 className="text-space-yellow font-bold text-lg">COMMUNICATION DES AGENTS</h2>
-              <div className="bg-space-darkblue/80 rounded-full px-2 py-0.5 text-xs text-gray-400">
+              <h2 className="text-space-yellow font-bold text-lg flex items-center">
+                <MessageSquare size={16} className="mr-2" /> COMMUNICATION DES AGENTS
+              </h2>
+              <div className="bg-space-darkblue/80 rounded-full px-2 py-0.5 text-xs text-gray-400 flex items-center">
+                <div className="w-1.5 h-1.5 bg-space-blue rounded-full mr-1 animate-pulse"></div>
                 Canal sécurisé
               </div>
             </div>
@@ -317,7 +369,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
                   key={idx} 
                   className={`mx-2 ${idx === gameState.activeAgentIndex ? 'ring-2 ring-space-yellow' : ''}`}
                 >
-                  <Avatar className="w-12 h-12">
+                  <Avatar className="w-12 h-12 border-2 border-space-blue">
                     <AvatarImage src={agent.avatar} alt={agent.name} />
                     <AvatarFallback>{agent.name.slice(0, 2)}</AvatarFallback>
                   </Avatar>
@@ -326,9 +378,23 @@ const GameBoard: React.FC<GameBoardProps> = ({
             </div>
             
             <div 
-              className="h-[400px] mb-4 p-3 bg-space-darkblue/50 rounded-md border border-space-blue/20 overflow-y-auto"
+              className="h-[400px] mb-4 p-3 bg-space-darkblue/50 rounded-md border border-space-blue/20 overflow-y-auto relative"
               style={{scrollBehavior: 'smooth'}}
             >
+              {/* Subtle grid lines */}
+              <div className="absolute inset-0 pointer-events-none">
+                <div className="grid grid-cols-10 h-full w-full">
+                  {Array.from({ length: 10 }).map((_, i) => (
+                    <div key={i} className="border-r border-space-blue/5 h-full"></div>
+                  ))}
+                </div>
+                <div className="grid grid-rows-10 h-full w-full">
+                  {Array.from({ length: 10 }).map((_, i) => (
+                    <div key={i} className="border-b border-space-blue/5 w-full"></div>
+                  ))}
+                </div>
+              </div>
+              
               {agentThinking ? (
                 <div className="flex items-center justify-center h-full">
                   <div className="text-center">
@@ -361,8 +427,11 @@ const GameBoard: React.FC<GameBoardProps> = ({
                         transition={{ duration: 0.3, delay: idx * 0.1 }}
                         className="flex items-start gap-2"
                       >
-                        <div className="flex-shrink-0 w-8 h-8 rounded-full bg-space-darkblue border border-space-blue flex items-center justify-center text-md">
-                          {agent.avatar}
+                        <div className="flex-shrink-0">
+                          <Avatar className="w-8 h-8 border border-space-blue/50">
+                            <AvatarImage src={agent.avatar} alt={agent.name} />
+                            <AvatarFallback>{agent.name.slice(0, 2)}</AvatarFallback>
+                          </Avatar>
                         </div>
                         
                         <div className="flex-grow">
@@ -402,13 +471,14 @@ const GameBoard: React.FC<GameBoardProps> = ({
                         <div className="text-sm text-white">{word}</div>
                         <div className="flex -space-x-2">
                           {agentIndices.map(agentIndex => (
-                            <div 
+                            <Avatar 
                               key={agentIndex} 
-                              className="w-6 h-6 rounded-full bg-space-darkblue border border-space-blue flex items-center justify-center text-xs"
+                              className="w-6 h-6 border border-space-blue"
                               title={gameState.selectedAgents[agentIndex].name}
                             >
-                              {gameState.selectedAgents[agentIndex].avatar}
-                            </div>
+                              <AvatarImage src={gameState.selectedAgents[agentIndex].avatar} alt={gameState.selectedAgents[agentIndex].name} />
+                              <AvatarFallback>{gameState.selectedAgents[agentIndex].name.slice(0, 2)}</AvatarFallback>
+                            </Avatar>
                           ))}
                         </div>
                       </div>
@@ -430,10 +500,38 @@ const GameBoard: React.FC<GameBoardProps> = ({
                   <span className="text-sm text-gray-500">En attente d'indice</span>
                 </div>
               )}
+              
+              {agentsFinishedGuessing && isGuessingPhase && (
+                <button
+                  onClick={() => setGameState(prev => ({...prev, currentClue: '', currentNumber: 0}))}
+                  className="star-wars-button text-sm py-1 flex items-center gap-2"
+                >
+                  <Star size={14} />
+                  <span>Nouvel indice</span>
+                </button>
+              )}
             </div>
           </div>
         </div>
       </div>
+      
+      {/* CSS animation for scanner effect */}
+      <style jsx>{`
+        @keyframes scan {
+          0% { 
+            top: 0%;
+            box-shadow: 0px 0px 8px 2px rgba(14, 165, 233, 0.8);
+          }
+          50% { 
+            top: 100%; 
+            box-shadow: 0px 0px 12px 3px rgba(14, 165, 233, 0.5);
+          }
+          100% { 
+            top: 0%;
+            box-shadow: 0px 0px 8px 2px rgba(14, 165, 233, 0.8); 
+          }
+        }
+      `}</style>
     </motion.div>
   );
 };
