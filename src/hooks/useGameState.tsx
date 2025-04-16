@@ -88,6 +88,17 @@ export function useGameState() {
   const submitClue = useCallback((clue: string, number: number) => {
     console.log("Submitting clue to game state:", clue, "with number:", number);
     setGameState(prev => {
+      // Si le clue est vide, c'est une demande de nouvel indice
+      if (!clue.trim()) {
+        return {
+          ...prev,
+          currentClue: '',
+          currentNumber: 0,
+          guessedThisTurn: 0,
+          agentReasoning: ''
+        };
+      }
+      
       // Choisir aléatoirement quel agent va réfléchir à voix haute
       const randomAgentIndex = Math.floor(Math.random() * prev.selectedAgents.length);
       const activeAgent = prev.selectedAgents[randomAgentIndex];
@@ -98,7 +109,7 @@ export function useGameState() {
       return {
         ...prev,
         currentClue: clue,
-        currentNumber: number,
+        currentNumber: number, // Utiliser le nombre sélectionné par l'utilisateur
         guessedThisTurn: 0,
         agentReasoning: reasoning,
         activeAgentIndex: randomAgentIndex

@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import WordGrid from './WordGrid';
@@ -30,8 +31,10 @@ const GameBoard: React.FC<GameBoardProps> = ({
   const [agentVotes, setAgentVotes] = useState<{[key: number]: number[]}>({});
   const [voteTimer, setVoteTimer] = useState(0);
   const [finalVote, setFinalVote] = useState<number | null>(null);
-  const [chatMessages, setChatMessages] = useState<{agentIndex: number; message: string; type: 'reasoning' | 'vote' | 'critique'}[]>([]);
+  const [chatMessages, setChatMessages] = useState<{agentIndex: number; message: string; type: 'reasoning' | 'vote' | 'critique' | 'provocation'}[]>([]);
   const [starPositions, setStarPositions] = useState<{top: string, left: string, size: string, delay: string}[]>([]);
+  const [idleTimer, setIdleTimer] = useState(0);
+  const [lastInteraction, setLastInteraction] = useState(Date.now());
   
   useEffect(() => {
     const stars = Array.from({ length: 50 }).map(() => ({
@@ -47,6 +50,8 @@ const GameBoard: React.FC<GameBoardProps> = ({
     if (gameState.currentClue) {
       setAgentThinking(true);
       setShowReasoningPanel(true);
+      setIdleTimer(0);
+      setLastInteraction(Date.now());
       
       setAgentVotes({});
       setFinalVote(null);
@@ -102,6 +107,40 @@ const GameBoard: React.FC<GameBoardProps> = ({
     }
   }, [gameState.currentClue, gameState.wordGrid, gameState.selectedAgents, gameState.activeAgentIndex, gameState.agentReasoning]);
   
+  // Nouvel effet pour le timer d'inactivité
+  useEffect(() => {
+    // Seulement si on est en attente d'indice (pas de clue en cours et pas en phase de vote)
+    if (!gameState.currentClue && Object.keys(agentVotes).length === 0 && gameState.phase === 'game') {
+      const interval = setInterval(() => {
+        const now = Date.now();
+        const elapsed = now - lastInteraction;
+        
+        // Si ça fait plus de 20 secondes sans interaction
+        if (elapsed > 20000 && idleTimer === 0) {
+          // Ajouter un message de provocation aléatoire d'un agent aléatoire
+          const randomAgentIndex = Math.floor(Math.random() * gameState.selectedAgents.length);
+          const agent = gameState.selectedAgents[randomAgentIndex];
+          const message = generateAgentProvocation(agent);
+          
+          setChatMessages(prev => [...prev, {
+            agentIndex: randomAgentIndex,
+            message: message,
+            type: 'provocation'
+          }]);
+          
+          setIdleTimer(1); // Marquer qu'on a déjà fait une provocation
+          
+          // Réinitialiser après 1 minute pour permettre une autre provocation
+          setTimeout(() => {
+            setIdleTimer(0);
+          }, 60000);
+        }
+      }, 5000);
+      
+      return () => clearInterval(interval);
+    }
+  }, [gameState.currentClue, agentVotes, lastInteraction, idleTimer, gameState.selectedAgents, gameState.phase]);
+  
   useEffect(() => {
     if (voteTimer > 0) {
       const interval = setInterval(() => {
@@ -144,12 +183,14 @@ const GameBoard: React.FC<GameBoardProps> = ({
     if (clue.trim()) {
       onSubmitClue(clue.trim(), number);
       setClue('');
+      setLastInteraction(Date.now());
     }
   };
 
   const handleNumberChange = (selectedNumber: number) => {
     console.log("Setting number to:", selectedNumber);
     setNumber(selectedNumber);
+    setLastInteraction(Date.now());
   };
   
   const isGuessingPhase = gameState.currentClue ? true : false;
@@ -171,12 +212,28 @@ const GameBoard: React.FC<GameBoardProps> = ({
     }
   };
   
+  const generateAgentProvocation = (agent: AIAgentData) => {
+    switch(agent.name) {
+      case 'Yoda':
+        return `Mmmmm, attendre encore longtemps, je ne peux. Un indice donner, vous devez. Hmmmm.`;
+      case 'Nicolas Tesla':
+        return `L'efficacité est primordiale. Chaque seconde sans transmettre d'indice diminue nos chances de succès de 12.7%. J'attends vos instructions.`;
+      case 'Jack l\'Éventreur':
+        return `*impatient* Le temps presse... J'ai d'autres victimes à pourchasser après cette mission. Un indice, peut-être?`;
+      case 'Gengis Khan':
+        return `Par les steppes mongoles! La patience n'est pas ma vertu! Donnez-nous un indice ou je raserai ce vaisseau comme j'ai rasé Samarkand!`;
+      default:
+        return `J'attends un indice pour avancer dans la mission...`;
+    }
+  };
+  
   return (
     <motion.div
       className="w-full max-w-6xl mx-auto relative"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
+      onClick={() => setLastInteraction(Date.now())}
     >
       {starPositions.map((star, i) => (
         <div 
