@@ -1,10 +1,11 @@
+
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import WordGrid from './WordGrid';
 import AIAgent from './AIAgent';
 import { GameState } from '../hooks/useGameState';
 import { Search, Send, Rocket, Clock, Brain, MessageSquare, Home, Check, X } from 'lucide-react';
-import { getAgentGuess } from '../data/gameData';
+import { getAgentGuess, AIAgentData } from '../data/gameData';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 
 interface GameBoardProps {
