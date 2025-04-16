@@ -97,7 +97,7 @@ export function useGameState() {
       return {
         ...prev,
         currentClue: clue,
-        currentNumber: number,
+        currentNumber: number, // Utiliser le nombre de mots sélectionné par l'utilisateur
         guessedThisTurn: 0,
         agentReasoning: reasoning,
         activeAgentIndex: randomAgentIndex

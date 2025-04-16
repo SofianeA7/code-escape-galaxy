@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import WordGrid from './WordGrid';
@@ -30,8 +31,11 @@ const GameBoard: React.FC<GameBoardProps> = ({
   const [agentVotes, setAgentVotes] = useState<{[key: number]: number[]}>({});
   const [voteTimer, setVoteTimer] = useState(0);
   const [finalVote, setFinalVote] = useState<number | null>(null);
-  const [chatMessages, setChatMessages] = useState<{agentIndex: number; message: string; type: 'reasoning' | 'vote' | 'critique'}[]>([]);
+  const [chatMessages, setChatMessages] = useState<{agentIndex: number; message: string; type: 'reasoning' | 'vote' | 'critique' | 'provocation'}[]>([]);
+  const [inactivityTimer, setInactivityTimer] = useState<NodeJS.Timeout | null>(null);
+  const [provocationSent, setProvocationSent] = useState(false);
   
+  // Effet pour gérer le traitement de l'indice
   useEffect(() => {
     if (gameState.currentClue) {
       setAgentThinking(true);
@@ -90,7 +94,8 @@ const GameBoard: React.FC<GameBoardProps> = ({
       return () => clearTimeout(timer);
     }
   }, [gameState.currentClue, gameState.wordGrid, gameState.selectedAgents, gameState.activeAgentIndex, gameState.agentReasoning]);
-  
+
+  // Effet pour gérer le vote final
   useEffect(() => {
     if (voteTimer > 0) {
       const interval = setInterval(() => {
@@ -127,6 +132,48 @@ const GameBoard: React.FC<GameBoardProps> = ({
     }
   }, [voteTimer, agentVotes, finalVote, onGuessWord, gameState.wordGrid, gameState.activeAgentIndex]);
   
+  // Effet pour gérer l'inactivité et les provocations des agents
+  useEffect(() => {
+    // Nettoyer le timer d'inactivité précédent
+    if (inactivityTimer) {
+      clearTimeout(inactivityTimer);
+    }
+    
+    // Si on est en phase de jeu (pas d'indice actif) et qu'aucune provocation n'a été envoyée
+    if (!gameState.currentClue && !provocationSent && gameState.phase === 'game') {
+      // Déclencher une provocation après 20 secondes
+      const timer = setTimeout(() => {
+        // Choisir un agent aléatoire pour la provocation
+        const randomAgentIndex = Math.floor(Math.random() * gameState.selectedAgents.length);
+        const agent = gameState.selectedAgents[randomAgentIndex];
+        
+        // Générer un message de provocation basé sur la personnalité
+        const provocationMessage = generateAgentProvocation(agent);
+        
+        setChatMessages(prev => [...prev, {
+          agentIndex: randomAgentIndex,
+          message: provocationMessage,
+          type: 'provocation'
+        }]);
+        
+        setProvocationSent(true);
+      }, 20000); // 20 secondes
+      
+      setInactivityTimer(timer);
+    }
+    
+    // Réinitialiser l'état des provocations quand on entre ou quitte une phase de jeu
+    if (gameState.currentClue) {
+      setProvocationSent(false);
+    }
+    
+    return () => {
+      if (inactivityTimer) {
+        clearTimeout(inactivityTimer);
+      }
+    };
+  }, [gameState.currentClue, gameState.phase, gameState.selectedAgents, provocationSent]);
+  
   const handleSubmitClue = (e: React.FormEvent) => {
     e.preventDefault();
     if (clue.trim()) {
@@ -135,10 +182,14 @@ const GameBoard: React.FC<GameBoardProps> = ({
     }
   };
   
+  const handleNumberChange = (n: number) => {
+    setNumber(n);
+  };
+  
   const isGuessingPhase = gameState.currentClue ? true : false;
   const activeAgent = gameState.selectedAgents[gameState.activeAgentIndex];
 
-  const generateAgentCritique = (agent: AIAgentData, currentClue: string) => {
+  const generateAgentCritique = (agent: any, currentClue: string) => {
     switch(agent.name) {
       case 'Yoda':
         return `Hmm, un indice intéressant, "${currentClue}" est. Mais la Force, attention nous devons porter. Plusieurs sens, ce mot peut avoir.`;
@@ -150,6 +201,22 @@ const GameBoard: React.FC<GameBoardProps> = ({
         return `L'indice "${currentClue}" est comme un territoire à conquérir. Plusieurs mots s'offrent à nous, mais un seul nous mènera à la victoire.`;
       default:
         return `Je réfléchis à l'indice "${currentClue}"...`;
+    }
+  };
+  
+  // Nouvelle fonction pour générer des provocations d'inactivité
+  const generateAgentProvocation = (agent: any) => {
+    switch(agent.name) {
+      case 'Yoda':
+        return `Hmm, attendre longtemps, nous faisons. Un indice, nous avons besoin, oui. La patience, une vertu est, mais la mission, progresser doit.`;
+      case 'Nicolas Tesla':
+        return `Je calcule que notre efficacité diminue de 27,8% par minute d'inactivité. Un indice augmenterait notre rendement électromagnétique de façon exponentielle.`;
+      case 'Jack l\'Éventreur':
+        return `*aiguise son couteau* Le temps passe, très cher. Je m'impatiente... et vous ne voulez pas me voir impatient. Un indice, peut-être?`;
+      case 'Gengis Khan':
+        return `Par les steppes gelées de Mongolie! Ma horde s'impatiente! Donnez-nous un objectif à conquérir, ou nous pourrions bien envahir votre territoire!`;
+      default:
+        return `Nous attendons vos instructions. Un indice serait bienvenu.`;
     }
   };
   
@@ -276,7 +343,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
                       <button
                         key={n}
                         type="button"
-                        onClick={() => setNumber(n)}
+                        onClick={() => handleNumberChange(n)}
                         className={`flex-1 py-2 rounded-md transition-colors ${
                           number === n 
                             ? 'bg-space-yellow text-black' 
@@ -292,6 +359,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
                 <button
                   type="submit"
                   className="star-wars-button w-full flex items-center justify-center gap-2"
+                  disabled={!clue.trim()}
                 >
                   <Send size={16} />
                   <span>Transmettre l'indice</span>
@@ -360,8 +428,11 @@ const GameBoard: React.FC<GameBoardProps> = ({
                         transition={{ duration: 0.3, delay: idx * 0.1 }}
                         className="flex items-start gap-2"
                       >
-                        <div className="flex-shrink-0 w-8 h-8 rounded-full bg-space-darkblue border border-space-blue flex items-center justify-center text-md">
-                          {agent.avatar}
+                        <div className="flex-shrink-0 w-8 h-8 rounded-full overflow-hidden">
+                          <Avatar className="w-8 h-8">
+                            <AvatarImage src={agent.avatar} alt={agent.name} />
+                            <AvatarFallback>{agent.name.slice(0, 2)}</AvatarFallback>
+                          </Avatar>
                         </div>
                         
                         <div className="flex-grow">
@@ -403,10 +474,13 @@ const GameBoard: React.FC<GameBoardProps> = ({
                           {agentIndices.map(agentIndex => (
                             <div 
                               key={agentIndex} 
-                              className="w-6 h-6 rounded-full bg-space-darkblue border border-space-blue flex items-center justify-center text-xs"
+                              className="w-6 h-6 rounded-full bg-space-darkblue border border-space-blue overflow-hidden"
                               title={gameState.selectedAgents[agentIndex].name}
                             >
-                              {gameState.selectedAgents[agentIndex].avatar}
+                              <Avatar className="w-6 h-6">
+                                <AvatarImage src={gameState.selectedAgents[agentIndex].avatar} alt={gameState.selectedAgents[agentIndex].name} />
+                                <AvatarFallback>{gameState.selectedAgents[agentIndex].name.slice(0, 2)}</AvatarFallback>
+                              </Avatar>
                             </div>
                           ))}
                         </div>
@@ -433,6 +507,15 @@ const GameBoard: React.FC<GameBoardProps> = ({
           </div>
         </div>
       </div>
+
+      <style>
+        {`
+          @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1.0); }
+          }
+        `}
+      </style>
     </motion.div>
   );
 };
