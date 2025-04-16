@@ -19,6 +19,13 @@ export interface GameState {
   activeAgentIndex: number;
 }
 
+// Étendre l'interface AIAgentData pour inclure la dimension sociale
+declare module '../data/gameData' {
+  interface AIAgentData {
+    socialDimension: number; // 1-10
+  }
+}
+
 export function useGameState() {
   const [gameState, setGameState] = useState<GameState>({
     gameId: '',
@@ -36,10 +43,15 @@ export function useGameState() {
   });
 
   const startNewGame = useCallback(() => {
-    // Select 3 random AI agents
+    // Sélectionner 3 agents aléatoires et leur attribuer une dimension sociale
     const randomAgents = [...aiAgents]
       .sort(() => Math.random() - 0.5)
-      .slice(0, 3);
+      .slice(0, 3)
+      .map(agent => ({
+        ...agent,
+        // Ajouter une dimension sociale à chaque agent (de 1 à 10)
+        socialDimension: Math.floor(Math.random() * 10) + 1
+      }));
     
     const gameBoard = generateGameBoard();
     
@@ -75,7 +87,10 @@ export function useGameState() {
 
   const submitClue = useCallback((clue: string, number: number) => {
     setGameState(prev => {
-      const activeAgent = prev.selectedAgents[prev.activeAgentIndex];
+      // Choisir aléatoirement quel agent va réfléchir à voix haute
+      const randomAgentIndex = Math.floor(Math.random() * prev.selectedAgents.length);
+      const activeAgent = prev.selectedAgents[randomAgentIndex];
+      
       // Générer un raisonnement détaillé basé sur la personnalité de l'agent actif
       const reasoning = activeAgent.reasoningStyle(clue, prev.wordGrid);
       
@@ -84,7 +99,8 @@ export function useGameState() {
         currentClue: clue,
         currentNumber: number,
         guessedThisTurn: 0,
-        agentReasoning: reasoning
+        agentReasoning: reasoning,
+        activeAgentIndex: randomAgentIndex
       };
     });
   }, []);
@@ -105,7 +121,9 @@ export function useGameState() {
     let newScore = gameState.score;
     let newTurnsLeft = gameState.turnsLeft;
     let newGuessedThisTurn = gameState.guessedThisTurn + 1;
-    let newActiveAgentIndex = (gameState.activeAgentIndex + 1) % gameState.selectedAgents.length;
+    
+    // Choisir aléatoirement quel agent parlera ensuite
+    let newActiveAgentIndex = Math.floor(Math.random() * gameState.selectedAgents.length);
     let newAgentReasoning = '';
     
     if (wordType === 'blue') {
@@ -152,7 +170,8 @@ export function useGameState() {
 
   const endTurn = useCallback(() => {
     setGameState(prev => {
-      const newActiveAgentIndex = (prev.activeAgentIndex + 1) % prev.selectedAgents.length;
+      // Choisir aléatoirement quel agent parlera au prochain tour
+      const newActiveAgentIndex = Math.floor(Math.random() * prev.selectedAgents.length);
       const nextAgent = prev.selectedAgents[newActiveAgentIndex];
       const newReasoning = nextAgent.reasoningStyle(prev.currentClue, prev.wordGrid);
       

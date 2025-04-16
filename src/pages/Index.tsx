@@ -33,7 +33,13 @@ const Index = () => {
         return <IntroSequence onComplete={goToAgentsPhase} />;
       
       case 'agents':
-        return <AgentsPresentation agents={gameState.selectedAgents} onComplete={goToGamePhase} />;
+        return (
+          <AgentsPresentation 
+            agents={gameState.selectedAgents} 
+            onComplete={goToGamePhase} 
+            onHome={resetToHome}
+          />
+        );
         
       case 'game':
         return (
@@ -43,6 +49,7 @@ const Index = () => {
               onSubmitClue={submitClue}
               onGuessWord={guessWord}
               onEndTurn={endTurn}
+              onHome={resetToHome}
             />
           </div>
         );
@@ -130,10 +137,10 @@ const HomeScreen = ({ onStartGame }: { onStartGame: () => void }) => {
         <div className="space-card p-6">
           <h2 className="text-space-yellow font-bold text-lg mb-3">VOTRE ÉQUIPE</h2>
           <p className="text-gray-300 text-sm mb-3">
-            Travaillez avec une équipe unique d'agents IA historiques, chacun ayant sa propre personnalité et expertise.
+            Travaillez avec une équipe unique d'agents IA historiques, chacun ayant sa propre personnalité et dimension sociale.
           </p>
           <p className="text-gray-300 text-sm">
-            De Yoda à Gengis Khan, guidez-les pour décrypter les 9 mots de code nécessaires à votre évasion.
+            Ensemble, ils discuteront et voteront pour décrypter les 9 mots de code nécessaires à votre évasion.
           </p>
         </div>
         
@@ -143,7 +150,7 @@ const HomeScreen = ({ onStartGame }: { onStartGame: () => void }) => {
             Un seul mot incorrect déclenchera le système d'alarme, mettant fin à votre mission immédiatement.
           </p>
           <p className="text-gray-300 text-sm">
-            Chaque transmission compte. Choisissez vos indices avec soin et faites confiance à vos agents.
+            Chaque transmission compte. Choisissez vos indices avec soin et faites confiance au vote de vos agents.
           </p>
         </div>
       </motion.div>

@@ -2,6 +2,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { AIAgentData } from '../data/gameData';
+import { Users } from 'lucide-react';
 
 interface AIAgentProps {
   agent: AIAgentData;
@@ -54,15 +55,30 @@ const AIAgent: React.FC<AIAgentProps> = ({
         </motion.div>
       )}
       
-      <div className="mt-2 flex items-center">
-        <div className="text-xs text-gray-400 mr-2">Confiance</div>
-        <div className="flex-1 bg-gray-700 h-1 rounded-full overflow-hidden">
-          <motion.div 
-            className="bg-space-blue h-1"
-            initial={{ width: 0 }}
-            animate={{ width: `${agent.confidence * 10}%` }}
-            transition={{ duration: 1 }}
-          />
+      <div className="mt-2 space-y-2">
+        <div className="flex items-center">
+          <div className="text-xs text-gray-400 mr-2">Confiance</div>
+          <div className="flex-1 bg-gray-700 h-1 rounded-full overflow-hidden">
+            <motion.div 
+              className="bg-space-blue h-1"
+              initial={{ width: 0 }}
+              animate={{ width: `${agent.confidence * 10}%` }}
+              transition={{ duration: 1 }}
+            />
+          </div>
+        </div>
+        
+        <div className="flex items-center">
+          <Users size={12} className="text-space-blue mr-1" />
+          <div className="text-xs text-gray-400 mr-2">Dimension sociale</div>
+          <div className="flex-1 bg-gray-700 h-1 rounded-full overflow-hidden">
+            <motion.div 
+              className="bg-space-yellow h-1"
+              initial={{ width: 0 }}
+              animate={{ width: `${agent.socialDimension * 10}%` }}
+              transition={{ duration: 1, delay: 0.3 }}
+            />
+          </div>
         </div>
       </div>
     </motion.div>

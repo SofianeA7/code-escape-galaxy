@@ -2,7 +2,7 @@
 import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { GameState } from '../hooks/useGameState';
-import { Rocket, Award, AlertTriangle, RotateCcw } from 'lucide-react';
+import { Rocket, Award, AlertTriangle, RotateCcw, Home } from 'lucide-react';
 
 interface OutcomeScreenProps {
   gameState: GameState;
@@ -90,19 +90,19 @@ const OutcomeScreen: React.FC<OutcomeScreenProps> = ({
             
             <div className="flex gap-4">
               <button
+                onClick={onHome}
+                className="star-wars-button flex-1 text-sm py-2 flex items-center justify-center gap-2"
+              >
+                <Home size={16} />
+                <span>Retour à la base</span>
+              </button>
+              
+              <button
                 onClick={onRestart}
                 className="star-wars-button flex-1 text-sm py-2 flex items-center justify-center gap-2"
               >
                 <RotateCcw size={16} />
                 <span>Nouvelle Mission</span>
-              </button>
-              
-              <button
-                onClick={onHome}
-                className="star-wars-button flex-1 text-sm py-2 flex items-center justify-center gap-2"
-              >
-                <Rocket size={16} />
-                <span>Retour à la base</span>
               </button>
             </div>
           </motion.div>
@@ -147,19 +147,19 @@ const OutcomeScreen: React.FC<OutcomeScreenProps> = ({
             
             <div className="flex gap-4">
               <button
+                onClick={onHome}
+                className="star-wars-button flex-1 text-sm py-2 flex items-center justify-center gap-2"
+              >
+                <Home size={16} />
+                <span>Retour à la base</span>
+              </button>
+              
+              <button
                 onClick={onRestart}
                 className="star-wars-button flex-1 text-sm py-2 flex items-center justify-center gap-2"
               >
                 <RotateCcw size={16} />
                 <span>Réessayer</span>
-              </button>
-              
-              <button
-                onClick={onHome}
-                className="star-wars-button flex-1 text-sm py-2 flex items-center justify-center gap-2"
-              >
-                <Rocket size={16} />
-                <span>Retour à la base</span>
               </button>
             </div>
           </motion.div>

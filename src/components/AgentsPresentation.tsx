@@ -3,57 +3,45 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AIAgentData } from '../data/gameData';
 import AIAgent from './AIAgent';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Home } from 'lucide-react';
 
 interface AgentsPresentationProps {
   agents: AIAgentData[];
   onComplete: () => void;
+  onHome: () => void;
 }
 
-const AgentsPresentation: React.FC<AgentsPresentationProps> = ({ agents, onComplete }) => {
-  const [currentAgentIndex, setCurrentAgentIndex] = useState(0);
-  const [showQuote, setShowQuote] = useState(false);
+const AgentsPresentation: React.FC<AgentsPresentationProps> = ({ agents, onComplete, onHome }) => {
+  const [showQuotes, setShowQuotes] = useState(false);
   
   useEffect(() => {
-    // Afficher la citation après un court délai
+    // Afficher les citations après un court délai
     const timer = setTimeout(() => {
-      setShowQuote(true);
-    }, 500);
+      setShowQuotes(true);
+    }, 800);
     
     return () => clearTimeout(timer);
-  }, [currentAgentIndex]);
-  
-  const handleNext = () => {
-    if (currentAgentIndex < agents.length - 1) {
-      setShowQuote(false);
-      setCurrentAgentIndex(prev => prev + 1);
-    } else {
-      // Tous les agents ont été présentés
-      onComplete();
-    }
-  };
-  
-  const currentAgent = agents[currentAgentIndex];
+  }, []);
   
   // Citations pour chaque agent
   const getAgentQuote = (agent: AIAgentData) => {
     switch (agent.name) {
       case 'Yoda':
-        return "Ta mission, importante est. T'aider, je vais.";
+        return "Ta mission, importante est. T'aider, je vais. Ensemble, plus forts nous serons.";
       case 'Nicolas Tesla':
-        return "L'énergie et la logique seront mes outils pour décoder cette mission.";
+        return "L'énergie et la logique seront mes outils pour décoder cette mission. Je guiderai nos délibérations collectives.";
       case 'Jack l\'Éventreur':
-        return "Je découperai ce mystère en morceaux, jusqu'au dernier mot...";
+        return "Je découperai ce mystère en morceaux, jusqu'au dernier mot. Ne comptez pas sur ma sympathie.";
       case 'Gengis Khan':
-        return "Ensemble, nous conquerrons cette mission comme j'ai conquis des empires!";
+        return "Ensemble, nous conquerrons cette mission! Stratégie et domination, mes alliés feront.";
       default:
-        return "Je suis prêt à accomplir cette mission.";
+        return "Je suis prêt à accomplir cette mission avec vous.";
     }
   };
   
   return (
     <div className="fixed inset-0 bg-black/90 flex items-center justify-center p-4">
-      <div className="max-w-2xl w-full">
+      <div className="max-w-4xl w-full">
         <motion.h2 
           className="text-space-yellow text-center text-2xl md:text-4xl font-bold mb-8"
           initial={{ opacity: 0, y: -20 }}
@@ -63,51 +51,52 @@ const AgentsPresentation: React.FC<AgentsPresentationProps> = ({ agents, onCompl
           VOTRE ÉQUIPE D'AGENTS REBELLES
         </motion.h2>
         
-        <div className="text-center mb-4 text-gray-400">
-          <span className="mr-2">Agent</span>
-          <span className="font-bold text-space-yellow">{currentAgentIndex + 1}</span>
-          <span className="mx-2">/</span>
-          <span>{agents.length}</span>
-        </div>
-        
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={currentAgent.id}
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.9 }}
-            transition={{ duration: 0.4 }}
-            className="mb-6"
-          >
-            <div className="space-card p-5">
-              <AIAgent 
-                agent={currentAgent}
-                isActive={true}
-                isSpeaking={showQuote}
-                message={showQuote ? getAgentQuote(currentAgent) : ""}
-              />
-            </div>
-          </motion.div>
-        </AnimatePresence>
+        <motion.p 
+          className="text-center text-gray-300 mb-8"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3, duration: 0.5 }}
+        >
+          Ces agents vont collaborer et voter ensemble pour décrypter vos indices
+        </motion.p>
         
         <motion.div 
-          className="flex justify-center"
+          className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5, duration: 0.6 }}
+        >
+          {agents.map((agent) => (
+            <AIAgent 
+              key={agent.id}
+              agent={agent}
+              isActive={true}
+              isSpeaking={showQuotes}
+              message={showQuotes ? getAgentQuote(agent) : ""}
+            />
+          ))}
+        </motion.div>
+        
+        <motion.div 
+          className="flex justify-center gap-4"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1 }}
         >
           <button 
-            onClick={handleNext} 
+            onClick={onHome} 
             className="star-wars-button flex items-center gap-2"
           >
-            {currentAgentIndex < agents.length - 1 ? (
-              <>
-                <span>Agent suivant</span>
-                <ArrowRight size={16} />
-              </>
-            ) : (
-              <span>Démarrer la mission</span>
-            )}
+            <Home size={16} />
+            <span>Retour à la base</span>
+          </button>
+          
+          <button 
+            onClick={onComplete} 
+            className="star-wars-button flex items-center gap-2"
+          >
+            <span>Démarrer la mission</span>
+            <ArrowRight size={16} />
           </button>
         </motion.div>
       </div>
