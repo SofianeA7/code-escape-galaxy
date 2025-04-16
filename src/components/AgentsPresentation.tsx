@@ -95,7 +95,7 @@ const AgentsPresentation: React.FC<AgentsPresentationProps> = ({ agents, onCompl
                   animate={{ opacity: 1 }}
                   transition={{ delay: 1, duration: 0.5 }}
                 >
-                  <span className="text-space-yellow font-bold">Comprend son rôle:</span> {getAgentRoleDescription(agent)}
+                  <span className="text-space-yellow font-bold">Rôle:</span> {getAgentRoleDescription(agent)}
                 </motion.div>
               )}
             </div>
