@@ -86,19 +86,7 @@ export function useGameState() {
   }, []);
 
   const submitClue = useCallback((clue: string, number: number) => {
-    console.log("Submitting clue to game state:", clue, "with number:", number);
     setGameState(prev => {
-      // Si le clue est vide, c'est une demande de nouvel indice
-      if (!clue.trim()) {
-        return {
-          ...prev,
-          currentClue: '',
-          currentNumber: 0,
-          guessedThisTurn: 0,
-          agentReasoning: ''
-        };
-      }
-      
       // Choisir aléatoirement quel agent va réfléchir à voix haute
       const randomAgentIndex = Math.floor(Math.random() * prev.selectedAgents.length);
       const activeAgent = prev.selectedAgents[randomAgentIndex];
@@ -109,7 +97,7 @@ export function useGameState() {
       return {
         ...prev,
         currentClue: clue,
-        currentNumber: number, // Utiliser le nombre sélectionné par l'utilisateur
+        currentNumber: number,
         guessedThisTurn: 0,
         agentReasoning: reasoning,
         activeAgentIndex: randomAgentIndex
@@ -137,8 +125,6 @@ export function useGameState() {
     // Choisir aléatoirement quel agent parlera ensuite
     let newActiveAgentIndex = Math.floor(Math.random() * gameState.selectedAgents.length);
     let newAgentReasoning = '';
-    let newCurrentClue = gameState.currentClue;
-    let newCurrentNumber = gameState.currentNumber;
     
     if (wordType === 'blue') {
       newRemainingBlueWords -= 1;
@@ -149,23 +135,23 @@ export function useGameState() {
         newPhase = 'success';
         newScore += newTurnsLeft * 50; // Bonus points for remaining turns
       } else if (newGuessedThisTurn >= gameState.currentNumber) {
-        // Si on a atteint le nombre maximum de tentatives, on réinitialise pour le prochain tour
-        newCurrentClue = '';
-        newCurrentNumber = 0;
-        newGuessedThisTurn = 0;
+        // Si on a fini nos tentatives pour ce tour, générer un nouveau raisonnement
+        const nextAgent = gameState.selectedAgents[newActiveAgentIndex];
+        newAgentReasoning = nextAgent.reasoningStyle(gameState.currentClue, newGrid);
       }
     } else if (wordType === 'assassin') {
       newPhase = 'failure';
     } else {
       // Neutral - end turn
       newTurnsLeft -= 1;
-      // Réinitialiser pour le prochain indice
-      newCurrentClue = '';
-      newCurrentNumber = 0;
-      newGuessedThisTurn = 0;
+      newGuessedThisTurn = gameState.currentNumber + 1; // Force end turn
       
       if (newTurnsLeft === 0) {
         newPhase = 'failure';
+      } else {
+        // Générer un nouveau raisonnement pour le prochain agent
+        const nextAgent = gameState.selectedAgents[newActiveAgentIndex];
+        newAgentReasoning = nextAgent.reasoningStyle(gameState.currentClue, newGrid);
       }
     }
     
@@ -178,9 +164,7 @@ export function useGameState() {
       turnsLeft: newTurnsLeft,
       score: newScore,
       activeAgentIndex: newActiveAgentIndex,
-      agentReasoning: newAgentReasoning,
-      currentClue: newCurrentClue,
-      currentNumber: newCurrentNumber
+      agentReasoning: newAgentReasoning
     }));
   }, [gameState]);
 
@@ -188,15 +172,16 @@ export function useGameState() {
     setGameState(prev => {
       // Choisir aléatoirement quel agent parlera au prochain tour
       const newActiveAgentIndex = Math.floor(Math.random() * prev.selectedAgents.length);
+      const nextAgent = prev.selectedAgents[newActiveAgentIndex];
+      const newReasoning = nextAgent.reasoningStyle(prev.currentClue, prev.wordGrid);
       
       return {
         ...prev,
         turnsLeft: prev.turnsLeft - 1,
         currentClue: '',
         currentNumber: 0,
-        guessedThisTurn: 0,
         activeAgentIndex: newActiveAgentIndex,
-        agentReasoning: ''
+        agentReasoning: newReasoning
       };
     });
   }, []);
