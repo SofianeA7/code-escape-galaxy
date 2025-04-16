@@ -30,6 +30,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
   const [agentVotes, setAgentVotes] = useState<{[key: number]: number[]}>({});
   const [voteTimer, setVoteTimer] = useState(0);
   const [finalVote, setFinalVote] = useState<number | null>(null);
+  const [chatMessages, setChatMessages] = useState<{agentIndex: number; message: string; type: 'reasoning' | 'vote' | 'critique'}[]>([]);
   
   useEffect(() => {
     if (gameState.currentClue) {
@@ -37,12 +38,38 @@ const GameBoard: React.FC<GameBoardProps> = ({
       // Montrer automatiquement le panneau de raisonnement
       setShowReasoningPanel(true);
       
-      // Réinitialiser les votes
+      // Réinitialiser les votes et le chat
       setAgentVotes({});
       setFinalVote(null);
+      setChatMessages([]);
       
       const timer = setTimeout(() => {
         setAgentThinking(false);
+        
+        // Ajout des messages de raisonnement
+        const newChatMessages = [...chatMessages];
+        
+        // Raisonnement de l'agent principal
+        newChatMessages.push({
+          agentIndex: gameState.activeAgentIndex,
+          message: gameState.agentReasoning,
+          type: 'reasoning'
+        });
+        
+        // Critiques et discussions entre les agents
+        gameState.selectedAgents.forEach((agent, idx) => {
+          if (idx !== gameState.activeAgentIndex) {
+            // Générer une critique ou un commentaire
+            const critique = generateAgentCritique(agent, gameState.currentClue);
+            newChatMessages.push({
+              agentIndex: idx,
+              message: critique,
+              type: 'critique'
+            });
+          }
+        });
+        
+        setChatMessages(newChatMessages);
         
         // Simuler le vote des agents
         const votes: {[key: number]: number[]} = {};
@@ -51,6 +78,15 @@ const GameBoard: React.FC<GameBoardProps> = ({
           if (guessIndex >= 0) {
             if (!votes[guessIndex]) votes[guessIndex] = [];
             votes[guessIndex].push(agentIndex);
+            
+            // Ajouter les votes au chat
+            setTimeout(() => {
+              setChatMessages(prev => [...prev, {
+                agentIndex: agentIndex,
+                message: `Je vote pour le mot "${gameState.wordGrid[guessIndex].word}"`,
+                type: 'vote'
+              }]);
+            }, 500 + agentIndex * 700);
           }
         });
         
@@ -62,7 +98,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
       
       return () => clearTimeout(timer);
     }
-  }, [gameState.currentClue, gameState.wordGrid, gameState.selectedAgents]);
+  }, [gameState.currentClue, gameState.wordGrid, gameState.selectedAgents, gameState.activeAgentIndex, gameState.agentReasoning]);
   
   // Timer pour le vote final
   useEffect(() => {
@@ -87,6 +123,13 @@ const GameBoard: React.FC<GameBoardProps> = ({
       if (selectedIndex !== null) {
         setFinalVote(selectedIndex);
         
+        // Ajouter message de consensus final au chat
+        setChatMessages(prev => [...prev, {
+          agentIndex: gameState.activeAgentIndex,
+          message: `Nous avons décidé collectivement de choisir le mot "${gameState.wordGrid[selectedIndex].word}"`,
+          type: 'vote'
+        }]);
+        
         // Appliquer le vote après un court délai
         setTimeout(() => {
           onGuessWord(selectedIndex);
@@ -95,7 +138,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
         }, 1500);
       }
     }
-  }, [voteTimer, agentVotes, finalVote, onGuessWord]);
+  }, [voteTimer, agentVotes, finalVote, onGuessWord, gameState.wordGrid, gameState.activeAgentIndex]);
   
   const handleSubmitClue = (e: React.FormEvent) => {
     e.preventDefault();
@@ -105,18 +148,23 @@ const GameBoard: React.FC<GameBoardProps> = ({
     }
   };
   
-  const isGuessingPhase = !!gameState.currentClue;
+  const isGuessingPhase = gameState.currentClue ? true : false;
   const activeAgent = gameState.selectedAgents[gameState.activeAgentIndex];
-  
-  // Fonction pour obtenir le message de vote d'un agent
-  const getVoteMessage = (agentIndex: number) => {
-    for (const [wordIndex, votes] of Object.entries(agentVotes)) {
-      if (votes.includes(agentIndex)) {
-        const word = gameState.wordGrid[parseInt(wordIndex)].word;
-        return `Je vote pour le mot "${word}"`;
-      }
+
+  // Générer une critique basée sur la personnalité de l'agent
+  const generateAgentCritique = (agent: AIAgentData, currentClue: string) => {
+    switch(agent.name) {
+      case 'Yoda':
+        return `Hmm, un indice intéressant, "${currentClue}" est. Mais la Force, attention nous devons porter. Plusieurs sens, ce mot peut avoir.`;
+      case 'Nicolas Tesla':
+        return `En analysant l'indice "${currentClue}", je relève plusieurs associations sémantiques possibles. Procédons par élimination logique.`;
+      case 'Jack l\'Éventreur':
+        return `"${currentClue}"? J'aimerais trancher immédiatement, mais je dois disséquer toutes les options avant de porter mon coup final.`;
+      case 'Gengis Khan':
+        return `L'indice "${currentClue}" est comme un territoire à conquérir. Plusieurs mots s'offrent à nous, mais un seul nous mènera à la victoire.`;
+      default:
+        return `Je réfléchis à l'indice "${currentClue}"...`;
     }
-    return "";
   };
   
   return (
@@ -136,8 +184,9 @@ const GameBoard: React.FC<GameBoardProps> = ({
         </button>
       </div>
       
-      <div className="flex flex-col md:flex-row gap-4">
-        <div className="flex-1">
+      <div className="flex flex-col lg:flex-row gap-4">
+        {/* Panel de gauche - Grille de mots réduite */}
+        <div className="lg:w-1/2">
           <div className="space-card p-4 mb-4">
             <div className="flex justify-between mb-4">
               <div>
@@ -166,56 +215,6 @@ const GameBoard: React.FC<GameBoardProps> = ({
               </div>
             )}
             
-            {/* Vote Panel */}
-            {isGuessingPhase && Object.keys(agentVotes).length > 0 && finalVote === null && (
-              <AnimatePresence>
-                <motion.div 
-                  className="mb-4 p-4 bg-space-darkblue/80 border border-space-yellow/30 rounded-md"
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                  exit={{ opacity: 0, height: 0 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-2">
-                      <MessageSquare size={18} className="text-space-yellow" />
-                      <h3 className="text-space-yellow font-bold">VOTE DES AGENTS</h3>
-                    </div>
-                    <div className="bg-space-darkblue rounded-full px-2 py-1 text-space-yellow">
-                      {voteTimer > 0 ? `Vote dans ${voteTimer}s` : "Vote terminé"}
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    {Object.entries(agentVotes).map(([wordIndex, agentIndices]) => {
-                      const word = gameState.wordGrid[parseInt(wordIndex)].word;
-                      return (
-                        <div key={wordIndex} className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <div className="bg-space-darkblue border border-space-blue/50 px-2 py-1 rounded">
-                              {word}
-                            </div>
-                            <div className="text-gray-400">{agentIndices.length} vote(s)</div>
-                          </div>
-                          <div className="flex -space-x-2">
-                            {agentIndices.map(agentIndex => (
-                              <div 
-                                key={agentIndex} 
-                                className="w-6 h-6 rounded-full bg-space-darkblue border border-space-blue flex items-center justify-center text-xs"
-                                title={gameState.selectedAgents[agentIndex].name}
-                              >
-                                {gameState.selectedAgents[agentIndex].avatar}
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </motion.div>
-              </AnimatePresence>
-            )}
-            
             {/* Final Vote Result */}
             {isGuessingPhase && finalVote !== null && (
               <AnimatePresence>
@@ -232,51 +231,6 @@ const GameBoard: React.FC<GameBoardProps> = ({
                     <span className="bg-space-darkblue border border-space-blue px-3 py-1 rounded">
                       {gameState.wordGrid[finalVote].word}
                     </span>
-                  </div>
-                </motion.div>
-              </AnimatePresence>
-            )}
-            
-            {/* Agent Reasoning Panel */}
-            {isGuessingPhase && showReasoningPanel && (
-              <AnimatePresence>
-                <motion.div 
-                  className="mb-4 p-4 bg-space-darkblue/80 border border-space-blue/30 rounded-md"
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                  exit={{ opacity: 0, height: 0 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-2">
-                      <Brain size={18} className="text-space-blue" />
-                      <h3 className="text-space-yellow font-bold">PROCESSUS DE RÉFLEXION</h3>
-                    </div>
-                    <button 
-                      className="text-gray-400 hover:text-space-yellow"
-                      onClick={() => setShowReasoningPanel(!showReasoningPanel)}
-                    >
-                      {showReasoningPanel ? '−' : '+'}
-                    </button>
-                  </div>
-                  
-                  <div className="flex items-start gap-3">
-                    <div className="mt-1 w-8 h-8 rounded-full bg-space-darkblue border border-space-blue flex items-center justify-center text-xl">
-                      {activeAgent.avatar}
-                    </div>
-                    <div className="flex-1">
-                      <div className="text-space-blue font-bold">{activeAgent.name} réfléchit...</div>
-                      <div className="text-gray-300 mt-1">
-                        {agentThinking ? (
-                          <div className="flex items-center gap-2">
-                            <div className="w-2 h-2 bg-space-blue rounded-full animate-ping"></div>
-                            <span>Analyse en cours de l'indice "{gameState.currentClue}"...</span>
-                          </div>
-                        ) : (
-                          gameState.agentReasoning
-                        )}
-                      </div>
-                    </div>
                   </div>
                 </motion.div>
               </AnimatePresence>
@@ -309,57 +263,6 @@ const GameBoard: React.FC<GameBoardProps> = ({
                 </button>
               )}
             </div>
-          </div>
-        </div>
-
-        <div className="md:w-72">
-          <div className="space-card p-4 mb-4">
-            <div className="flex items-center justify-between mb-3">
-              <h2 className="text-space-yellow font-bold text-lg">AGENTS REBELLES</h2>
-              <div className="bg-space-darkblue/80 rounded-full px-2 py-0.5 text-xs text-gray-400">
-                Discussion en cours
-              </div>
-            </div>
-            
-            <div className="space-y-3">
-              {gameState.selectedAgents.map((agent, i) => {
-                // L'agent actif est celui qui parle actuellement
-                const isActive = i === gameState.activeAgentIndex;
-                const isSpeaking = (agentThinking && isActive) || 
-                                  (isActive && gameState.agentReasoning && !agentThinking) ||
-                                  (Object.keys(agentVotes).length > 0 && getVoteMessage(i));
-                
-                let agentMessage = "";
-                if (agentThinking && isActive) {
-                  agentMessage = "Analyse en cours... Je réfléchis à l'indice.";
-                } else if (Object.keys(agentVotes).length > 0 && getVoteMessage(i)) {
-                  agentMessage = getVoteMessage(i);
-                } else if (isActive && gameState.agentReasoning) {
-                  agentMessage = gameState.agentReasoning;
-                }
-                
-                return (
-                  <AIAgent 
-                    key={agent.id}
-                    agent={agent}
-                    isActive={isActive}
-                    isSpeaking={isSpeaking}
-                    message={agentMessage}
-                  />
-                );
-              })}
-            </div>
-            
-            {/* Bouton pour afficher le raisonnement */}
-            {isGuessingPhase && (
-              <button
-                className="w-full mt-3 star-wars-button text-sm flex items-center justify-center gap-2"
-                onClick={() => setShowReasoningPanel(!showReasoningPanel)}
-              >
-                <Brain size={14} />
-                {showReasoningPanel ? "Masquer le raisonnement" : "Voir le raisonnement"}
-              </button>
-            )}
           </div>
           
           {!isGuessingPhase && (
@@ -405,6 +308,141 @@ const GameBoard: React.FC<GameBoardProps> = ({
               </form>
             </div>
           )}
+        </div>
+
+        {/* Panel de droite - Chat et discussion des agents */}
+        <div className="lg:w-1/2">
+          <div className="space-card p-4 h-full">
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-space-yellow font-bold text-lg">COMMUNICATION DES AGENTS</h2>
+              <div className="bg-space-darkblue/80 rounded-full px-2 py-0.5 text-xs text-gray-400">
+                Canal sécurisé
+              </div>
+            </div>
+            
+            {/* Affichage des avatars des agents en haut */}
+            <div className="flex justify-center mb-4">
+              {gameState.selectedAgents.map((agent, idx) => (
+                <div 
+                  key={idx} 
+                  className={`w-10 h-10 rounded-full mx-2 flex items-center justify-center border-2 ${idx === gameState.activeAgentIndex ? 'border-space-yellow bg-space-darkblue' : 'border-gray-600 bg-space-darkblue/50'}`}
+                  title={agent.name}
+                >
+                  {agent.avatar}
+                </div>
+              ))}
+            </div>
+            
+            {/* Zone de chat */}
+            <div 
+              className="h-[400px] mb-4 p-3 bg-space-darkblue/50 rounded-md border border-space-blue/20 overflow-y-auto"
+              style={{scrollBehavior: 'smooth'}}
+            >
+              {agentThinking ? (
+                <div className="flex items-center justify-center h-full">
+                  <div className="text-center">
+                    <div className="flex justify-center mb-4">
+                      {Array(3).fill(0).map((_, i) => (
+                        <div 
+                          key={i} 
+                          className="w-3 h-3 bg-space-blue rounded-full mx-1"
+                          style={{
+                            animation: `bounce 1.4s infinite ease-in-out both`,
+                            animationDelay: `${i * 0.16}s`
+                          }}
+                        />
+                      ))}
+                    </div>
+                    <p className="text-gray-400">Les agents analysent votre indice...</p>
+                  </div>
+                </div>
+              ) : chatMessages.length > 0 ? (
+                <div className="space-y-4">
+                  {chatMessages.map((msg, idx) => {
+                    const agent = gameState.selectedAgents[msg.agentIndex];
+                    const isActiveAgent = msg.agentIndex === gameState.activeAgentIndex;
+                    
+                    return (
+                      <motion.div 
+                        key={idx}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.3, delay: idx * 0.1 }}
+                        className="flex items-start gap-2"
+                      >
+                        <div className="flex-shrink-0 w-8 h-8 rounded-full bg-space-darkblue border border-space-blue flex items-center justify-center text-md">
+                          {agent.avatar}
+                        </div>
+                        
+                        <div className="flex-grow">
+                          <div className={`agent-chat-bubble ${isActiveAgent ? 'left' : 'right'}`}>
+                            <div className="text-xs text-space-blue mb-1 font-bold">{agent.name}</div>
+                            <div className="text-sm text-gray-300">{msg.message}</div>
+                          </div>
+                        </div>
+                      </motion.div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="flex items-center justify-center h-full text-gray-400">
+                  <p>Envoyez un indice pour démarrer la discussion des agents</p>
+                </div>
+              )}
+            </div>
+            
+            {/* Vote summary */}
+            {isGuessingPhase && Object.keys(agentVotes).length > 0 && finalVote === null && (
+              <div className="p-3 bg-space-darkblue/70 rounded-md border border-space-blue/30 mb-4">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <MessageSquare size={16} className="text-space-yellow" />
+                    <h3 className="text-space-yellow font-bold">VOTE DES AGENTS</h3>
+                  </div>
+                  <div className="bg-space-darkblue rounded-full px-2 py-0.5 text-xs text-space-yellow">
+                    {voteTimer > 0 ? `Vote dans ${voteTimer}s` : "Vote terminé"}
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-2">
+                  {Object.entries(agentVotes).map(([wordIndex, agentIndices]) => {
+                    const word = gameState.wordGrid[parseInt(wordIndex)].word;
+                    return (
+                      <div key={wordIndex} className="flex items-center justify-between bg-space-darkblue/50 p-2 rounded">
+                        <div className="text-sm text-white">{word}</div>
+                        <div className="flex -space-x-2">
+                          {agentIndices.map(agentIndex => (
+                            <div 
+                              key={agentIndex} 
+                              className="w-6 h-6 rounded-full bg-space-darkblue border border-space-blue flex items-center justify-center text-xs"
+                              title={gameState.selectedAgents[agentIndex].name}
+                            >
+                              {gameState.selectedAgents[agentIndex].avatar}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+            
+            {/* Avatars des agents en bas */}
+            <div className="flex items-center justify-between">
+              {isGuessingPhase ? (
+                <div className="flex items-center">
+                  <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
+                  <span className="text-sm text-green-500">Communication active</span>
+                </div>
+              ) : (
+                <div className="flex items-center">
+                  <div className="w-2 h-2 bg-gray-500 rounded-full mr-2"></div>
+                  <span className="text-sm text-gray-500">En attente d'indice</span>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </motion.div>
