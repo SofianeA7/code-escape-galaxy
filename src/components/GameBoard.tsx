@@ -1,10 +1,9 @@
-
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import WordGrid from './WordGrid';
 import AIAgent from './AIAgent';
 import { GameState } from '../hooks/useGameState';
-import { Search, Send, Rocket, Clock, Brain, MessageSquare, Home, Check, X, Planet, Satellite, Star, Moon } from 'lucide-react';
+import { Search, Send, Rocket, Clock, Brain, MessageSquare, Home, Check, X, Globe, Satellite, Star, Moon } from 'lucide-react';
 import { getAgentGuess, AIAgentData } from '../data/gameData';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 
@@ -34,7 +33,6 @@ const GameBoard: React.FC<GameBoardProps> = ({
   const [chatMessages, setChatMessages] = useState<{agentIndex: number; message: string; type: 'reasoning' | 'vote' | 'critique'}[]>([]);
   const [starPositions, setStarPositions] = useState<{top: string, left: string, size: string, delay: string}[]>([]);
   
-  // Generate random stars for background
   useEffect(() => {
     const stars = Array.from({ length: 50 }).map(() => ({
       top: `${Math.random() * 100}%`,
@@ -174,7 +172,6 @@ const GameBoard: React.FC<GameBoardProps> = ({
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
-      {/* Background stars */}
       {starPositions.map((star, i) => (
         <div 
           key={i}
@@ -189,9 +186,8 @@ const GameBoard: React.FC<GameBoardProps> = ({
         />
       ))}
       
-      {/* Floating planets */}
       <div className="absolute -top-10 right-10 text-space-blue opacity-30 animate-float">
-        <Planet size={80} />
+        <Globe size={80} />
       </div>
       <div className="absolute bottom-20 left-5 text-gray-700 opacity-20 animate-float" style={{ animationDelay: '1.5s' }}>
         <Moon size={60} />
@@ -291,7 +287,6 @@ const GameBoard: React.FC<GameBoardProps> = ({
           
           {!isGuessingPhase && (
             <div className="space-card p-4 backdrop-blur-md relative overflow-hidden">
-              {/* Holographic lights effect */}
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-space-blue/5 to-transparent animate-pulse"></div>
               
               <h2 className="text-space-yellow font-bold text-lg mb-3 flex items-center">
@@ -348,7 +343,6 @@ const GameBoard: React.FC<GameBoardProps> = ({
 
         <div className="lg:w-1/2">
           <div className="space-card p-4 h-full backdrop-blur-md relative overflow-hidden">
-            {/* Space-like scanner effect */}
             <div className="absolute inset-0 opacity-10">
               <div className="w-full h-1 bg-space-blue absolute top-0 animate-[scan_4s_ease-in-out_infinite]"></div>
             </div>
@@ -381,7 +375,6 @@ const GameBoard: React.FC<GameBoardProps> = ({
               className="h-[400px] mb-4 p-3 bg-space-darkblue/50 rounded-md border border-space-blue/20 overflow-y-auto relative"
               style={{scrollBehavior: 'smooth'}}
             >
-              {/* Subtle grid lines */}
               <div className="absolute inset-0 pointer-events-none">
                 <div className="grid grid-cols-10 h-full w-full">
                   {Array.from({ length: 10 }).map((_, i) => (
@@ -503,7 +496,9 @@ const GameBoard: React.FC<GameBoardProps> = ({
               
               {agentsFinishedGuessing && isGuessingPhase && (
                 <button
-                  onClick={() => setGameState(prev => ({...prev, currentClue: '', currentNumber: 0}))}
+                  onClick={() => {
+                    onSubmitClue('', 0);
+                  }}
                   className="star-wars-button text-sm py-1 flex items-center gap-2"
                 >
                   <Star size={14} />
@@ -515,23 +510,24 @@ const GameBoard: React.FC<GameBoardProps> = ({
         </div>
       </div>
       
-      {/* CSS animation for scanner effect */}
-      <style jsx>{`
-        @keyframes scan {
-          0% { 
-            top: 0%;
-            box-shadow: 0px 0px 8px 2px rgba(14, 165, 233, 0.8);
+      <style>
+        {`
+          @keyframes scan {
+            0% { 
+              top: 0%;
+              box-shadow: 0px 0px 8px 2px rgba(14, 165, 233, 0.8);
+            }
+            50% { 
+              top: 100%; 
+              box-shadow: 0px 0px 12px 3px rgba(14, 165, 233, 0.5);
+            }
+            100% { 
+              top: 0%;
+              box-shadow: 0px 0px 8px 2px rgba(14, 165, 233, 0.8); 
+            }
           }
-          50% { 
-            top: 100%; 
-            box-shadow: 0px 0px 12px 3px rgba(14, 165, 233, 0.5);
-          }
-          100% { 
-            top: 0%;
-            box-shadow: 0px 0px 8px 2px rgba(14, 165, 233, 0.8); 
-          }
-        }
-      `}</style>
+        `}
+      </style>
     </motion.div>
   );
 };
