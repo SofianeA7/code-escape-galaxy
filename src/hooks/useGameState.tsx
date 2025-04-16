@@ -1,3 +1,4 @@
+
 import { useState, useCallback } from 'react';
 import { WordCard, AIAgentData, generateGameBoard, aiAgents, generateGameId } from '../data/gameData';
 
@@ -85,6 +86,7 @@ export function useGameState() {
   }, []);
 
   const submitClue = useCallback((clue: string, number: number) => {
+    console.log("Submitting clue to game state:", clue, "with number:", number);
     setGameState(prev => {
       // Choisir aléatoirement quel agent va réfléchir à voix haute
       const randomAgentIndex = Math.floor(Math.random() * prev.selectedAgents.length);

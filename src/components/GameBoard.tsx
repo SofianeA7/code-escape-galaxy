@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import WordGrid from './WordGrid';
 import AIAgent from './AIAgent';
 import { GameState } from '../hooks/useGameState';
-import { Search, Send, Rocket, Clock, Brain, MessageSquare, Home, Check, X, Globe, Satellite, Star, Moon } from 'lucide-react';
+import { Search, Send, Rocket, Clock, Brain, MessageSquare, Home, Check, X, Globe, Satellite, Moon, Star } from 'lucide-react';
 import { getAgentGuess, AIAgentData } from '../data/gameData';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 
@@ -140,6 +140,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
   
   const handleSubmitClue = (e: React.FormEvent) => {
     e.preventDefault();
+    console.log("Submitting clue with number:", number);
     if (clue.trim()) {
       onSubmitClue(clue.trim(), number);
       setClue('');
@@ -147,6 +148,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
   };
 
   const handleNumberChange = (selectedNumber: number) => {
+    console.log("Setting number to:", selectedNumber);
     setNumber(selectedNumber);
   };
   
@@ -336,6 +338,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
                 <button
                   type="submit"
                   className="star-wars-button w-full flex items-center justify-center gap-2"
+                  disabled={!clue.trim()}
                 >
                   <Send size={16} />
                   <span>Transmettre l'indice</span>
@@ -514,24 +517,22 @@ const GameBoard: React.FC<GameBoardProps> = ({
         </div>
       </div>
       
-      <style>
-        {`
-          @keyframes scan {
-            0% { 
-              top: 0%;
-              box-shadow: 0px 0px 8px 2px rgba(14, 165, 233, 0.8);
-            }
-            50% { 
-              top: 100%; 
-              box-shadow: 0px 0px 12px 3px rgba(14, 165, 233, 0.5);
-            }
-            100% { 
-              top: 0%;
-              box-shadow: 0px 0px 8px 2px rgba(14, 165, 233, 0.8); 
-            }
+      <style jsx>{`
+        @keyframes scan {
+          0% { 
+            top: 0%;
+            box-shadow: 0px 0px 8px 2px rgba(14, 165, 233, 0.8);
           }
-        `}
-      </style>
+          50% { 
+            top: 100%; 
+            box-shadow: 0px 0px 12px 3px rgba(14, 165, 233, 0.5);
+          }
+          100% { 
+            top: 0%;
+            box-shadow: 0px 0px 8px 2px rgba(14, 165, 233, 0.8); 
+          }
+        }
+      `}</style>
     </motion.div>
   );
 };
