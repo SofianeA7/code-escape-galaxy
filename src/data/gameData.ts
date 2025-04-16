@@ -17,7 +17,7 @@ export const aiAgents: AIAgentData[] = [
   {
     id: 'agent-1',
     name: 'Yoda',
-    avatar: '👽',
+    avatar: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5',
     personality: 'Sage et mystérieux',
     confidence: 9,
     reasoningStyle: (clue, words) => {
@@ -29,7 +29,7 @@ export const aiAgents: AIAgentData[] = [
   {
     id: 'agent-2',
     name: 'Nicolas Tesla',
-    avatar: '⚡',
+    avatar: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e',
     personality: 'Génie inventif',
     confidence: 8,
     reasoningStyle: (clue, words) => {
@@ -41,7 +41,7 @@ export const aiAgents: AIAgentData[] = [
   {
     id: 'agent-3',
     name: 'Jack l\'Éventreur',
-    avatar: '🔪',
+    avatar: 'https://images.unsplash.com/photo-1501286353178-1ec881214838',
     personality: 'Mystérieux et calculateur',
     confidence: 7,
     reasoningStyle: (clue, words) => {
@@ -53,7 +53,7 @@ export const aiAgents: AIAgentData[] = [
   {
     id: 'agent-4',
     name: 'Gengis Khan',
-    avatar: '🏹',
+    avatar: 'https://images.unsplash.com/photo-1469041797191-50ace28483c3',
     personality: 'Conquérant impitoyable',
     confidence: 10,
     reasoningStyle: (clue, words) => {
@@ -76,12 +76,9 @@ export const wordsList = [
 ];
 
 export const generateGameBoard = (): WordCard[] => {
-  // Mélange la liste de mots et en prend 25
   const shuffledWords = [...wordsList].sort(() => Math.random() - 0.5).slice(0, 25);
   
-  // Création du plateau avec types de mots
   const board: WordCard[] = shuffledWords.map((word, index) => {
-    // 9 bleus, 14 neutres, 2 assassins
     let type: WordCard['type'] = 'neutral';
     
     if (index < 9) {
@@ -99,7 +96,6 @@ export const generateGameBoard = (): WordCard[] => {
     };
   });
   
-  // Mélange le plateau pour que les types soient distribués aléatoirement
   return board.sort(() => Math.random() - 0.5);
 };
 
@@ -108,14 +104,11 @@ export const generateGameId = (): string => {
 };
 
 export const getAgentGuess = (words: WordCard[], clue: string): number => {
-  // Cette fonction simule la façon dont un agent tente de deviner un mot basé sur l'indice
   const unrevealedWords = words.filter(word => !word.revealed);
   const blueWords = unrevealedWords.filter(word => word.type === 'blue');
   
   if (blueWords.length === 0) return -1;
   
-  // Les agents vont toujours essayer de deviner un mot bleu!
-  // Simulation d'une "intelligence" très basique
   return words.findIndex(word => 
     word.type === 'blue' && !word.revealed
   );

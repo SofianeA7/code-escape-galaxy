@@ -1,9 +1,9 @@
-
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AIAgentData } from '../data/gameData';
 import AIAgent from './AIAgent';
 import { ArrowRight, Home } from 'lucide-react';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 
 interface AgentsPresentationProps {
   agents: AIAgentData[];
@@ -15,7 +15,6 @@ const AgentsPresentation: React.FC<AgentsPresentationProps> = ({ agents, onCompl
   const [showQuotes, setShowQuotes] = useState(false);
   
   useEffect(() => {
-    // Afficher les citations après un court délai
     const timer = setTimeout(() => {
       setShowQuotes(true);
     }, 800);
@@ -23,7 +22,6 @@ const AgentsPresentation: React.FC<AgentsPresentationProps> = ({ agents, onCompl
     return () => clearTimeout(timer);
   }, []);
   
-  // Citations pour chaque agent
   const getAgentQuote = (agent: AIAgentData) => {
     switch (agent.name) {
       case 'Yoda':
@@ -39,24 +37,23 @@ const AgentsPresentation: React.FC<AgentsPresentationProps> = ({ agents, onCompl
     }
   };
   
-  // Description du poste pour chaque agent
   const getAgentRoleDescription = (agent: AIAgentData) => {
-    switch (agent.name) {
+    switch(agent.name) {
       case 'Yoda':
-        return "Les mots, je sens. Leur signification profonde, je vois. Guider les autres agents, mon rôle est.";
+        return "Guider l'équipe avec sagesse, décoder les nuances cachées des indices, et utiliser l'intuition pour comprendre le fil conducteur.";
       case 'Nicolas Tesla':
-        return "Mon rôle est d'appliquer une analyse scientifique rigoureuse aux indices verbaux, établissant des connexions logiques entre concepts.";
+        return "Analyser chaque indice avec une précision scientifique, créer des connexions logiques, et optimiser la stratégie de décodage.";
       case 'Jack l\'Éventreur':
-        return "Je suis ici pour disséquer impitoyablement chaque mot et éliminer les possibilités incorrectes avec une précision chirurgicale.";
+        return "Disséquer impitoyablement chaque mot, éliminer les hypothèses incorrectes avec une méthodologie chirurgicale et un regard sans pitié.";
       case 'Gengis Khan':
-        return "Commander cette équipe d'agents vers la victoire est ma stratégie. Je conquerrai ces mots de code comme des territoires.";
+        return "Diriger l'équipe comme une armée, prendre des décisions rapides et stratégiques, conquérir le code mot par mot.";
       default:
-        return "Mon rôle est de collaborer avec l'équipe pour décrypter les codes d'évasion.";
+        return "Collaborer avec l'équipe pour décrypter les codes d'évasion.";
     }
   };
   
   return (
-    <div className="fixed inset-0 bg-black/90 flex items-center justify-center p-4">
+    <div className="fixed inset-0 bg-gradient-to-br from-black via-space-darkblue to-black flex items-center justify-center p-4">
       <div className="max-w-4xl w-full">
         <motion.h2 
           className="text-space-yellow text-center text-2xl md:text-4xl font-bold mb-8"

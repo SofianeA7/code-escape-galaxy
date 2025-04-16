@@ -5,6 +5,7 @@ import AIAgent from './AIAgent';
 import { GameState } from '../hooks/useGameState';
 import { Search, Send, Rocket, Clock, Brain, MessageSquare, Home, Check, X } from 'lucide-react';
 import { getAgentGuess } from '../data/gameData';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 
 interface GameBoardProps {
   gameState: GameState;
@@ -34,10 +35,8 @@ const GameBoard: React.FC<GameBoardProps> = ({
   useEffect(() => {
     if (gameState.currentClue) {
       setAgentThinking(true);
-      // Montrer automatiquement le panneau de raisonnement
       setShowReasoningPanel(true);
       
-      // Réinitialiser les votes et le chat
       setAgentVotes({});
       setFinalVote(null);
       setChatMessages([]);
@@ -45,20 +44,16 @@ const GameBoard: React.FC<GameBoardProps> = ({
       const timer = setTimeout(() => {
         setAgentThinking(false);
         
-        // Ajout des messages de raisonnement
         const newChatMessages = [...chatMessages];
         
-        // Raisonnement de l'agent principal
         newChatMessages.push({
           agentIndex: gameState.activeAgentIndex,
           message: gameState.agentReasoning,
           type: 'reasoning'
         });
         
-        // Critiques et discussions entre les agents
         gameState.selectedAgents.forEach((agent, idx) => {
           if (idx !== gameState.activeAgentIndex) {
-            // Générer une critique ou un commentaire
             const critique = generateAgentCritique(agent, gameState.currentClue);
             newChatMessages.push({
               agentIndex: idx,
@@ -70,7 +65,6 @@ const GameBoard: React.FC<GameBoardProps> = ({
         
         setChatMessages(newChatMessages);
         
-        // Simuler le vote des agents
         const votes: {[key: number]: number[]} = {};
         gameState.selectedAgents.forEach((agent, agentIndex) => {
           const guessIndex = getAgentGuess(gameState.wordGrid, gameState.currentClue);
@@ -78,7 +72,6 @@ const GameBoard: React.FC<GameBoardProps> = ({
             if (!votes[guessIndex]) votes[guessIndex] = [];
             votes[guessIndex].push(agentIndex);
             
-            // Ajouter les votes au chat
             setTimeout(() => {
               setChatMessages(prev => [...prev, {
                 agentIndex: agentIndex,
@@ -91,7 +84,6 @@ const GameBoard: React.FC<GameBoardProps> = ({
         
         setAgentVotes(votes);
         
-        // Démarrer le timer de vote
         setVoteTimer(3);
       }, 3000);
       
@@ -99,7 +91,6 @@ const GameBoard: React.FC<GameBoardProps> = ({
     }
   }, [gameState.currentClue, gameState.wordGrid, gameState.selectedAgents, gameState.activeAgentIndex, gameState.agentReasoning]);
   
-  // Timer pour le vote final
   useEffect(() => {
     if (voteTimer > 0) {
       const interval = setInterval(() => {
@@ -108,7 +99,6 @@ const GameBoard: React.FC<GameBoardProps> = ({
       
       return () => clearInterval(interval);
     } else if (voteTimer === 0 && Object.keys(agentVotes).length > 0 && finalVote === null) {
-      // Déterminer le vote final (mot avec le plus de votes)
       let maxVotes = 0;
       let selectedIndex = null;
       
@@ -122,14 +112,12 @@ const GameBoard: React.FC<GameBoardProps> = ({
       if (selectedIndex !== null) {
         setFinalVote(selectedIndex);
         
-        // Ajouter message de consensus final au chat
         setChatMessages(prev => [...prev, {
           agentIndex: gameState.activeAgentIndex,
           message: `Nous avons décidé collectivement de choisir le mot "${gameState.wordGrid[selectedIndex].word}"`,
           type: 'vote'
         }]);
         
-        // Appliquer le vote après un court délai
         setTimeout(() => {
           onGuessWord(selectedIndex);
           setSuggestedIndex(null);
@@ -150,7 +138,6 @@ const GameBoard: React.FC<GameBoardProps> = ({
   const isGuessingPhase = gameState.currentClue ? true : false;
   const activeAgent = gameState.selectedAgents[gameState.activeAgentIndex];
 
-  // Générer une critique basée sur la personnalité de l'agent
   const generateAgentCritique = (agent: AIAgentData, currentClue: string) => {
     switch(agent.name) {
       case 'Yoda':
@@ -184,7 +171,6 @@ const GameBoard: React.FC<GameBoardProps> = ({
       </div>
       
       <div className="flex flex-col lg:flex-row gap-4">
-        {/* Panel de gauche - Grille de mots réduite */}
         <div className="lg:w-1/2">
           <div className="space-card p-4 mb-4">
             <div className="flex justify-between mb-4">
@@ -214,7 +200,6 @@ const GameBoard: React.FC<GameBoardProps> = ({
               </div>
             )}
             
-            {/* Final Vote Result */}
             {isGuessingPhase && finalVote !== null && (
               <AnimatePresence>
                 <motion.div 
@@ -316,7 +301,6 @@ const GameBoard: React.FC<GameBoardProps> = ({
           )}
         </div>
 
-        {/* Panel de droite - Chat et discussion des agents */}
         <div className="lg:w-1/2">
           <div className="space-card p-4 h-full">
             <div className="flex items-center justify-between mb-3">
@@ -326,20 +310,20 @@ const GameBoard: React.FC<GameBoardProps> = ({
               </div>
             </div>
             
-            {/* Affichage des avatars des agents en haut */}
             <div className="flex justify-center mb-4">
               {gameState.selectedAgents.map((agent, idx) => (
                 <div 
                   key={idx} 
-                  className={`w-10 h-10 rounded-full mx-2 flex items-center justify-center border-2 ${idx === gameState.activeAgentIndex ? 'border-space-yellow bg-space-darkblue' : 'border-gray-600 bg-space-darkblue/50'}`}
-                  title={agent.name}
+                  className={`mx-2 ${idx === gameState.activeAgentIndex ? 'ring-2 ring-space-yellow' : ''}`}
                 >
-                  {agent.avatar}
+                  <Avatar className="w-12 h-12">
+                    <AvatarImage src={agent.avatar} alt={agent.name} />
+                    <AvatarFallback>{agent.name.slice(0, 2)}</AvatarFallback>
+                  </Avatar>
                 </div>
               ))}
             </div>
             
-            {/* Zone de chat */}
             <div 
               className="h-[400px] mb-4 p-3 bg-space-darkblue/50 rounded-md border border-space-blue/20 overflow-y-auto"
               style={{scrollBehavior: 'smooth'}}
@@ -397,7 +381,6 @@ const GameBoard: React.FC<GameBoardProps> = ({
               )}
             </div>
             
-            {/* Vote summary */}
             {isGuessingPhase && Object.keys(agentVotes).length > 0 && finalVote === null && (
               <div className="p-3 bg-space-darkblue/70 rounded-md border border-space-blue/30 mb-4">
                 <div className="flex items-center justify-between mb-2">
@@ -434,7 +417,6 @@ const GameBoard: React.FC<GameBoardProps> = ({
               </div>
             )}
             
-            {/* Avatars des agents en bas */}
             <div className="flex items-center justify-between">
               {isGuessingPhase ? (
                 <div className="flex items-center">

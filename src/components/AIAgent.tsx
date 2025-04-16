@@ -3,6 +3,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { AIAgentData } from '../data/gameData';
 import { Users } from 'lucide-react';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 
 interface AIAgentProps {
   agent: AIAgentData;
@@ -28,9 +29,10 @@ const AIAgent: React.FC<AIAgentProps> = ({
       transition={isSpeaking ? { repeat: Infinity, duration: 1.5 } : {}}
     >
       <div className="flex items-center">
-        <div className={`w-10 h-10 rounded-full bg-space-darkblue border border-space-blue flex items-center justify-center text-xl ${isSpeaking ? 'animate-pulse' : ''}`}>
-          {agent.avatar}
-        </div>
+        <Avatar className={`w-10 h-10 border border-space-blue ${isSpeaking ? 'animate-pulse' : ''}`}>
+          <AvatarImage src={agent.avatar} alt={agent.name} />
+          <AvatarFallback>{agent.name.slice(0, 2)}</AvatarFallback>
+        </Avatar>
         
         <div className="ml-3">
           <div className="font-bold text-space-yellow">{agent.name}</div>
