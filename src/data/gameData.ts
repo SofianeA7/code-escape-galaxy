@@ -1,4 +1,3 @@
-
 export interface WordCard {
   word: string;
   type: 'blue' | 'neutral' | 'assassin';
@@ -11,7 +10,6 @@ export interface AIAgentData {
   avatar: string;
   personality: string;
   confidence: number; // 1-10
-  socialDimension: number; // 1-10
   reasoningStyle: (clue: string, words: WordCard[]) => string;
 }
 
@@ -22,7 +20,6 @@ export const aiAgents: AIAgentData[] = [
     avatar: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5',
     personality: 'Sage et mystérieux',
     confidence: 9,
-    socialDimension: 7,
     reasoningStyle: (clue, words) => {
       const unrevealed = words.filter(word => !word.revealed).map(w => w.word);
       const randomWords = unrevealed.slice(0, 3).join(", ");
@@ -35,7 +32,6 @@ export const aiAgents: AIAgentData[] = [
     avatar: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e',
     personality: 'Génie inventif',
     confidence: 8,
-    socialDimension: 5,
     reasoningStyle: (clue, words) => {
       const unrevealed = words.filter(word => !word.revealed).map(w => w.word);
       const randomWord = unrevealed[Math.floor(Math.random() * unrevealed.length)];
@@ -48,7 +44,6 @@ export const aiAgents: AIAgentData[] = [
     avatar: 'https://images.unsplash.com/photo-1501286353178-1ec881214838',
     personality: 'Mystérieux et calculateur',
     confidence: 7,
-    socialDimension: 3,
     reasoningStyle: (clue, words) => {
       const unrevealed = words.filter(word => !word.revealed).map(w => w.word);
       const randomWord = unrevealed[Math.floor(Math.random() * unrevealed.length)];
@@ -61,7 +56,6 @@ export const aiAgents: AIAgentData[] = [
     avatar: 'https://images.unsplash.com/photo-1469041797191-50ace28483c3',
     personality: 'Conquérant impitoyable',
     confidence: 10,
-    socialDimension: 8,
     reasoningStyle: (clue, words) => {
       const unrevealed = words.filter(word => !word.revealed).map(w => w.word);
       const randomWord = unrevealed[Math.floor(Math.random() * unrevealed.length)];

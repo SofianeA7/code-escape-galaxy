@@ -5,223 +5,179 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 240 10% 3.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
-    --primary: 221.2 63.4% 53.7%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 240 4.8% 95.9%;
-    --secondary-foreground: 240 5.9% 10%;
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
-    --accent: 240 4.8% 95.9%;
-    --accent-foreground: 240 5.9% 10%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
-    --ring: 240 5.9% 10%;
+    --background: 220 20% 5%;
+    --foreground: 0 0% 95%;
+
+    --card: 220 20% 10%;
+    --card-foreground: 0 0% 95%;
+
+    --popover: 220 20% 5%;
+    --popover-foreground: 0 0% 95%;
+
+    --primary: 210 100% 50%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 220 15% 20%;
+    --secondary-foreground: 0 0% 95%;
+
+    --muted: 220 15% 15%;
+    --muted-foreground: 0 0% 70%;
+
+    --accent: 220 70% 60%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 85% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 15% 20%;
+    --input: 220 15% 20%;
+    --ring: 210 100% 50%;
+
     --radius: 0.5rem;
-    --space-yellow: #FFE81F;
-    --space-blue: #4BD5EE;
-    --space-red: #FF5757;
-    --space-darkblue: #0A1128;
-    --space-black: #000000;
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+    
+    --font-starwars: 'Orbitron', system-ui, sans-serif;
   }
 
-  .dark {
-    --background: 240 10% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 240 10% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 240 10% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 217.2 91.2% 59.8%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 240 3.7% 15.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
-    --accent: 240 3.7% 15.9%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
-    --ring: 240 4.9% 83.9%;
+  html {
+    @apply bg-space-black text-white overflow-x-hidden;
+    background-image: 
+      radial-gradient(circle, rgba(14, 165, 233, 0.03) 1px, transparent 1px),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 800 800'%3E%3Cg fill='none' stroke='%23232F46' stroke-width='1'%3E%3Cpath d='M769 229L1037 260.9M927 880L731 737 520 660 309 538 40 599 295 764 126.5 879.5 40 599-197 493 102 382-31 229 126.5 79.5-69-63'/%3E%3Cpath d='M-31 229L237 261 390 382 603 493 308.5 537.5 101.5 381.5M370 905L295 764'/%3E%3Cpath d='M520 660L578 842 731 737 840 599 603 493 520 660 295 764 309 538 390 382 539 269 769 229 577.5 41.5 370 105 295 -36 126.5 79.5 237 261 102 382 40 599 -69 737 127 880'/%3E%3Cpath d='M520-140L578.5 42.5 731-63M603 493L539 269 237 261 370 105M902 382L539 269M390 382L102 382'/%3E%3Cpath d='M-222 42L126.5 79.5 370 105 539 269 577.5 41.5 927 80 769 229 902 382 603 493 731 737M295-36L577.5 41.5M578 842L295 764M40-201L127 80M102 382L-261 269'/%3E%3C/g%3E%3Cg fill='%23164174'%3E%3Ccircle cx='769' cy='229' r='5'/%3E%3Ccircle cx='539' cy='269' r='5'/%3E%3Ccircle cx='603' cy='493' r='5'/%3E%3Ccircle cx='731' cy='737' r='5'/%3E%3Ccircle cx='520' cy='660' r='5'/%3E%3Ccircle cx='309' cy='538' r='5'/%3E%3Ccircle cx='295' cy='764' r='5'/%3E%3Ccircle cx='40' cy='599' r='5'/%3E%3Ccircle cx='102' cy='382' r='5'/%3E%3Ccircle cx='127' cy='80' r='5'/%3E%3Ccircle cx='370' cy='105' r='5'/%3E%3Ccircle cx='578' cy='42' r='5'/%3E%3Ccircle cx='237' cy='261' r='5'/%3E%3Ccircle cx='390' cy='382' r='5'/%3E%3C/g%3E%3C/svg%3E"),
+      linear-gradient(180deg, #0A0A0A 0%, #1A1F2C 100%);
+    background-attachment: fixed;
+    background-position: center;
+    background-size: 800px 800px, cover;
   }
 }
 
-@layer base {
-  * {
-    @apply border-border;
+@layer components {
+  .star-wars-button {
+    @apply relative bg-transparent border-2 border-space-blue text-space-yellow font-bold py-3 px-6 rounded-md 
+           hover:bg-space-blue/20 transition-all duration-300 uppercase tracking-wider
+           after:content-[''] after:absolute after:inset-0 after:border-2 after:border-space-blue/50
+           after:rounded-md after:blur-sm after:opacity-75;
   }
-  body {
-    @apply bg-background text-foreground;
-    font-feature-settings: "rlig" 1, "calt" 1;
+  
+  .space-card {
+    @apply bg-space-darkblue/80 rounded-md border border-space-blue/30
+          shadow-lg shadow-space-blue/20 backdrop-blur-sm;
+  }
+  
+  .word-card {
+    @apply bg-space-darkblue border-2 border-gray-700 text-white p-4 rounded-md
+           flex items-center justify-center font-medium text-lg cursor-pointer 
+           transition-all duration-300 hover:border-space-blue;
+  }
+  
+  .word-card.blue {
+    @apply bg-space-blue/30 border-space-blue text-white;
+  }
+  
+  .word-card.neutral {
+    @apply bg-gray-700/30 border-gray-600 text-gray-300;
+  }
+  
+  .word-card.assassin {
+    @apply bg-black border-white text-white;
+  }
+  
+  /* Classes pour la vue spymaster */
+  .word-card.spymaster-blue {
+    @apply bg-space-blue/20 border-space-blue/40 text-white;
+  }
+  
+  .word-card.spymaster-neutral {
+    @apply bg-gray-700/10 border-gray-600/40 text-white;
+  }
+  
+  .word-card.spymaster-assassin {
+    @apply bg-black/70 border-white/40 text-white;
+  }
+
+  /* Chat des agents */
+  .agent-chat-bubble {
+    @apply relative p-3 rounded-lg mb-2 max-w-[80%];
+  }
+
+  .agent-chat-bubble::after {
+    content: '';
+    @apply absolute w-3 h-3 -bottom-1.5 transform rotate-45;
+  }
+
+  .agent-chat-bubble.left {
+    @apply bg-space-darkblue/90 border-l-2 border-space-blue ml-2;
+  }
+
+  .agent-chat-bubble.left::after {
+    @apply left-3 bg-space-darkblue/90;
+  }
+
+  .agent-chat-bubble.right {
+    @apply bg-space-blue/20 border-r-2 border-space-blue mr-2 ml-auto;
+  }
+
+  .agent-chat-bubble.right::after {
+    @apply right-3 bg-space-blue/20;
   }
 }
 
-/* Star Wars UI */
-.space-background {
-  @apply bg-gradient-to-br from-black via-space-darkblue to-black;
+/* Star Wars intro crawl */
+.star-wars-intro {
+  perspective: 400px;
+  overflow: hidden;
 }
 
-.space-card {
-  @apply bg-gradient-to-b from-gray-900/90 to-black/80 backdrop-blur-sm border border-space-blue/20 rounded-lg shadow-lg;
+.crawl-content {
+  transform-style: preserve-3d;
+  position: relative;
+  transform-origin: 50% 100%;
 }
 
-.star-wars-button {
-  @apply px-4 py-2 bg-space-yellow text-black font-bold rounded hover:brightness-110 transition-all active:scale-95 shadow-lg;
-}
-
-.word-card {
-  @apply aspect-video flex items-center justify-center p-2 rounded bg-gradient-to-b from-gray-800/80 to-gray-900/80 border border-gray-700/50 hover:border-space-yellow cursor-pointer text-center text-sm md:text-base font-medium text-white transition-all shadow-md;
-}
-
-.word-card.blue {
-  @apply bg-gradient-to-b from-space-blue/30 to-space-blue/10 border-space-blue text-space-blue;
-}
-
-.word-card.neutral {
-  @apply bg-gradient-to-b from-gray-700/30 to-gray-800/30 border-gray-600;
-}
-
-.word-card.assassin {
-  @apply bg-gradient-to-b from-space-red/30 to-red-900/30 border-space-red text-space-red;
-}
-
-.spymaster-blue {
-  @apply border-l-4 border-l-space-blue;
-}
-
-.spymaster-neutral {
-  @apply border-l-4 border-l-gray-600;
-}
-
-.spymaster-assassin {
-  @apply border-l-4 border-l-space-red;
-}
-
-.agent-chat-bubble {
-  @apply p-3 rounded-lg max-w-[85%] bg-space-darkblue/70 border border-space-blue/20;
-}
-
-.agent-chat-bubble.left {
-  @apply rounded-tl-none;
-}
-
-.agent-chat-bubble.right {
-  @apply rounded-tr-none;
-}
-
+/* Hologram effect */
 .hologram {
-  @apply relative;
+  position: relative;
+  overflow: hidden;
 }
 
 .hologram::before {
   content: '';
-  @apply absolute inset-0 bg-gradient-to-t from-space-blue/5 to-transparent pointer-events-none;
-  animation: hologram-flicker 8s infinite;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(transparent 0%, rgba(14, 165, 233, 0.2) 50%, transparent 100%);
+  animation: hologram-scan 3s linear infinite;
+  pointer-events: none;
 }
 
-@keyframes hologram-flicker {
-  0%, 100% { opacity: 0.5; }
-  50% { opacity: 0.7; }
-  25%, 75% { opacity: 0.3; }
+/* Stars animation */
+@keyframes twinkle {
+  0%, 100% { opacity: 0.8; }
+  50% { opacity: 0.2; }
 }
 
-/* Documentation Styling */
-.documentation-content {
-  font-family: 'Calibri', sans-serif;
-  line-height: 1.5;
-  color: #000;
-  background-color: white;
-  padding: 2rem;
-  border-radius: 0.5rem;
+.star {
+  position: fixed;
+  width: 2px;
+  height: 2px;
+  background: white;
+  border-radius: 50%;
+  animation: twinkle 4s infinite;
 }
 
-.documentation-content h1 {
-  font-size: 24px;
-  font-weight: bold;
-  margin-bottom: 1rem;
-  color: #2b579a;
-  text-align: center;
+@keyframes hologram-scan {
+  from { transform: translateY(-100%); }
+  to { transform: translateY(100%); }
 }
 
-.documentation-content h2 {
-  font-size: 18px;
-  font-weight: bold;
-  margin-top: 2rem;
-  margin-bottom: 0.75rem;
-  padding-bottom: 0.25rem;
-  border-bottom: 1px solid #ddd;
-  color: #2b579a;
-}
-
-.documentation-content h3 {
-  font-size: 16px;
-  font-weight: bold;
-  margin-top: 1.5rem;
-  margin-bottom: 0.5rem;
-  color: #2b579a;
-}
-
-.documentation-content h4 {
-  font-size: 14px;
-  font-weight: bold;
-  margin-top: 1rem;
-  margin-bottom: 0.5rem;
-  color: #333;
-}
-
-.documentation-content p {
-  margin-bottom: 1rem;
-  color: #333;
-}
-
-.documentation-content ul, 
-.documentation-content ol {
-  margin-bottom: 1rem;
-  padding-left: 2rem;
-  color: #333;
-}
-
-.documentation-content ul li {
-  list-style-type: disc;
-  margin-bottom: 0.5rem;
-}
-
-.documentation-content ol li {
-  list-style-type: decimal;
-  margin-bottom: 0.5rem;
-}
-
-.documentation-content pre {
-  background-color: #f5f5f5;
-  padding: 0.75rem;
-  border-radius: 0.25rem;
-  font-family: 'Consolas', monospace;
-  font-size: 0.875rem;
-  overflow-x: auto;
-  color: #333;
-  margin-bottom: 1rem;
-}
-
-.documentation-content code {
-  font-family: 'Consolas', monospace;
-  font-size: 0.9em;
-  background-color: #f5f5f5;
-  padding: 0.125rem 0.25rem;
-  border-radius: 0.25rem;
-  color: #0451a5;
-}
-
-@media print {
-  .documentation-content {
-    padding: 0;
-  }
-}
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&display=swap');
